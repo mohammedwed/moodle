@@ -1,0 +1,63 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - moodle
+    restart: unless-stopped
+
+  moodle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: moodle-local:latest
+    # No host port — caddy reaches moodle over the internal Docker network
+    expose:
+      - "80"
+    env_file: .env
+    environment:
+      MOODLE_DB_HOST: db
+      # MOODLE_REDIS_HOST: redis  # uncomment after phpredis extension is compiled in
+    volumes:
+      - moodledata:/var/moodledata
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${MOODLE_DB_NAME:-moodle}
+      POSTGRES_USER: ${MOODLE_DB_USER:-moodle}
+      POSTGRES_PASSWORD: ${MOODLE_DB_PASS:-moodle}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${MOODLE_DB_USER:-moodle}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+volumes:
+  moodledata:
+  dbdata:
+  redisdata:
+  caddy_data:
+  caddy_config:

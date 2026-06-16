@@ -1,0 +1,28 @@
+# Git / CI
+.git
+.github
+.gitignore
+.dockerignore
+
+# Local config (never bake credentials into the image)
+.env
+public/config.php
+
+# Dev tooling output
+node_modules
+vendor
+
+# Test / coverage artefacts
+coverage
+.nyc_output
+*.log
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+*.swp
+*~

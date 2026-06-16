@@ -1,0 +1,3 @@
+lms.veraxity.dev {
+    reverse_proxy moodle:80
+}
