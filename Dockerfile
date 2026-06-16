@@ -47,6 +47,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # phpredis — required for Moodle Redis session handler
 RUN pecl install redis && docker-php-ext-enable redis
 
+# SendGrid Web API sendmail wrapper (uses HTTPS/443, no outbound SMTP needed)
+COPY docker/sendgrid-sendmail.php /usr/local/bin/sendgrid-sendmail
+RUN chmod +x /usr/local/bin/sendgrid-sendmail
+
 # Enable Apache rewrite + headers
 RUN a2enmod rewrite headers
 

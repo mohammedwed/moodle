@@ -30,6 +30,13 @@ if (str_starts_with($CFG->wwwroot, 'https://')) {
     $CFG->sslproxy = true;
 }
 
+// SendGrid Web API — routes via HTTPS (port 443), no outbound SMTP needed.
+// The sendgrid-sendmail binary in the container reads SENDGRID_API_KEY from env.
+if (getenv('SENDGRID_API_KEY')) {
+    $CFG->smtphosts      = '';   // empty = PHP mail() → sendmail_path → our wrapper
+    $CFG->noreplyaddress = getenv('MOODLE_NOREPLY') ?: 'noreply@' . parse_url($CFG->wwwroot, PHP_URL_HOST);
+}
+
 // Redis session store (optional — only wired up when MOODLE_REDIS_HOST is set)
 if ($redisHost = getenv('MOODLE_REDIS_HOST')) {
     $CFG->session_handler_class = '\core\session\redis';
