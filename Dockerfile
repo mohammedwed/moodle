@@ -15,7 +15,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i 's/# en_AU.UTF-8/en_AU.UTF-8/' /etc/locale.gen \
+    && sed -i 's/# en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen \
+    && sed -i 's/# ar_SA.UTF-8/ar_SA.UTF-8/' /etc/locale.gen \
+    && locale-gen
 
 # PHP extensions required by Moodle
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
