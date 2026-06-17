@@ -58,3 +58,23 @@ function theme_veraxity_get_extra_scss($theme) {
     global $CFG;
     return file_get_contents($CFG->dirroot . '/theme/veraxity/scss/brand-custom.scss');
 }
+
+/**
+ * Destination for the front page's "Enroll Now" calls to action. Logged-in
+ * users go straight to the course list to self-enrol; anonymous visitors go
+ * to account creation if self-registration is enabled, otherwise to login
+ * (where they can also request an account from an admin).
+ *
+ * @return string
+ */
+function theme_veraxity_get_enroll_url(): string {
+    global $CFG;
+
+    if (isloggedin() && !isguestuser()) {
+        return (new \moodle_url('/course/index.php'))->out();
+    }
+    if (!empty($CFG->registerauth)) {
+        return (new \moodle_url('/login/signup.php'))->out();
+    }
+    return get_login_url();
+}

@@ -1,18 +1,8 @@
 // Veraxity brand — extra rules appended after the compiled Boost stylesheet.
-// Styles the front-page hero and course index rendered by
-// theme_veraxity\output\core\course_renderer.
+// Styles the front-page landing page rendered by
+// theme_veraxity\output\core\course_renderer and theme/veraxity/layout/frontpage.php.
 
-// Boost wraps every page's main content in a white "paper" box
-// (.main-inner { background-color: $white }) and prints a page-title header
-// above it. On the front page that fights with our own hero, so both get
-// neutralised here rather than in core.
-.pagelayout-frontpage {
-    #page-header {
-        display: none;
-    }
-}
-
-// Boost narrows "reading" pages (course view/edit, profile, the front page —
+// Boost narrows "reading" pages (course view/edit, profile —
 // anything with add_body_class('limitedwidth'), or anything on the
 // 'standard' layout) to $course-content-maxwidth (830px), but leaves
 // "tabular" pages (Participants, Grades, Reports — pagelayout 'admin' /
@@ -32,30 +22,24 @@ body.limitedwidth {
     max-width: none;
 }
 
-// Boost's own rule is #page.drawers .main-inner (an ID selector), which
-// outranks a plain class selector — match its specificity via the same
-// ancestor chain instead of reaching for !important. These properties are
-// purely cosmetic (unlike the max-width above) so they stay scoped to the
-// custom front page rather than applying everywhere.
-body.pagelayout-frontpage #page.drawers .main-inner {
-    background-color: $body-bg;
-    box-shadow: none;
-    border-radius: 0;
-    padding: 0;
-    margin-top: 0;
-}
-
-// frontpage_part() always prints its own heading (e.g. "Available courses")
-// above whatever frontpage_available_courses() returns; our override already
-// supplies a branded heading, so drop the generic outer one to avoid showing
-// both stacked on top of each other.
-#frontpage-available-course-list > h2:first-child {
-    display: none;
+// Moodle compiles every parent theme's extrascsscallback alongside the
+// child's, so Boost's "AI-generated image" disclosure watermark (added via
+// theme_boost_get_extra_scss() for its own default login illustration) still
+// renders here even though this theme never calls that function itself.
+// Suppressing the generated content is the only theme-level lever available
+// short of patching core. The selector is deliberately more specific than
+// Boost's (an extra `html` qualifier) rather than identical — core_minify's
+// CSS minifier merges same-selector rules and was dropping an identical-text
+// override entirely instead of letting the later declaration win.
+html body.pagelayout-login #page .login-layout-left::after {
+    content: none !important;
 }
 
 // Give the top nav its own identity instead of blending into the body bg.
 // Core prints a literal `bg-body` utility class on this element, which sets
 // background-color !important — only !important can outrank that here.
+// Applies site-wide (course pages, dashboard, etc.) — the front page uses its
+// own nav entirely (see .veraxity-lp-nav below) and never renders this one.
 .navbar.fixed-top {
     background-color: $body-color !important;
     border-bottom: 1px solid $secondary;
@@ -75,404 +59,933 @@ body.pagelayout-frontpage #page.drawers .main-inner {
     }
 }
 
-// Single orchestrated motion moment: the hero stages in on load, the cursor
-// blinks throughout. Nothing else on the page animates — one deliberate
-// gesture rather than scattered effects, and both respect reduced-motion.
-@keyframes veraxity-fade-up {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+// ── Landing page (academy-portal-concept mockup) ────────────────────────────
+// Everything below is scoped to elements built by course_renderer::frontpage()
+// and theme/veraxity/layout/frontpage.php, all under the veraxity-lp- prefix
+// so it can't leak onto any other page. Bilingual: English pairs a serif
+// (headings) with Inter (body) and DM Mono (small uppercase chrome labels);
+// Arabic swaps in Amiri (headings) and Cairo (body/labels) since uppercase
+// letter-spaced mono treatment doesn't have an Arabic equivalent. Numerals
+// (step counters) stay DM Mono + forced LTR in both directions.
+$lp-font-sans:      'Inter', sans-serif;
+$lp-font-sans-rtl:  'Cairo', sans-serif;
+$lp-font-serif:     'Cormorant Garamond', Georgia, serif;
+$lp-font-serif-rtl: 'Amiri', Georgia, serif;
+$lp-font-mono:      'DM Mono', monospace;
 
-@keyframes veraxity-blink {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-}
-
-.veraxity-cursor {
+.veraxity-lp-en {
+    font-family: $lp-font-mono;
+    font-size: 0.9em;
+    direction: ltr;
     display: inline-block;
-    width: .5em;
-    height: 1em;
-    margin-inline-start: .2em;
-    background-color: $primary;
-    vertical-align: text-bottom;
-    animation: veraxity-blink 1s step-end infinite;
+    color: $veraxity-gold-dark;
+    background: $veraxity-gold-pale;
+    padding: 1px 6px;
+    border-radius: 3px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .veraxity-cursor {
-        animation: none;
+// Shared button used by the nav, hero, and CTA banner.
+.veraxity-lp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: $lp-font-sans;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+    white-space: nowrap;
+
+    &--ghost {
+        color: $veraxity-card-bg;
+        border: 1px solid rgba($veraxity-card-bg, .18);
+        background: transparent;
+
+        &:hover { border-color: rgba($primary, .5); color: $primary; }
+    }
+
+    &--gold {
+        color: $body-color;
+        background: $primary;
+        border: 1px solid transparent;
+
+        &:hover { background: $veraxity-card-bg; transform: translateY(-1px); }
+    }
+
+    &--outline-light {
+        color: $veraxity-card-bg;
+        border: 1px solid rgba($veraxity-card-bg, .35);
+        background: transparent;
+
+        &:hover { border-color: $primary; color: $primary; }
     }
 }
 
-// Full-bleed, full-viewport hero. Dark rather than the page's cream body —
-// a deliberate one-section contrast (blueprint grid + amber glow, evoking
-// drafting paper/schematics for a software architect's academy) rather than
-// an attempt to theme the whole site dark.
-.veraxity-hero {
-    position: relative;
+// Fade-up on scroll, toggled by IntersectionObserver in frontpage.mustache.
+.veraxity-lp-fade-up {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+
+    &.in-view { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .veraxity-lp-fade-up {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+// ── Nav ──────────────────────────────────────────────────────────────────
+.veraxity-lp-nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: $body-color;
+    border-bottom: 1px solid rgba($veraxity-card-bg, .06);
+    padding: 0 2.5rem;
+    height: 72px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 6rem 1.5rem;
-    text-align: center;
-    overflow: hidden;
-    background-color: $body-color;
-    background-image:
-        radial-gradient(ellipse 60% 50% at 20% 15%, rgba($primary, .22), transparent),
-        radial-gradient(ellipse 55% 50% at 85% 85%, rgba($secondary, .18), transparent);
+    justify-content: space-between;
 
-    &::before {
-        content: '';
+    &__wordmark {
+        font-family: $lp-font-serif;
+        font-size: 22px;
+        font-weight: 600;
+        color: $veraxity-card-bg;
+        line-height: 1.1;
+        text-decoration: none;
+        letter-spacing: -0.01em;
+
+        span { color: $primary; font-style: italic; }
+    }
+
+    &__links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+
+        a {
+            font-family: $lp-font-sans;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: rgba($veraxity-card-bg, .7);
+            text-decoration: none;
+            transition: color 0.15s;
+
+            &:hover { color: $primary; }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    &__toggle {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+
+        span {
+            width: 20px;
+            height: 1.5px;
+            background: $veraxity-card-bg;
+        }
+    }
+
+    &__mobile-panel {
+        display: none;
+        position: absolute;
+        top: 72px;
+        inset-inline: 0;
+        background: $body-color;
+        border-bottom: 1px solid rgba($veraxity-card-bg, .08);
+        padding: 20px 24px 28px;
+        flex-direction: column;
+        gap: 18px;
+        z-index: 39;
+
+        &.open { display: flex; }
+
+        a {
+            font-family: $lp-font-sans;
+            font-size: 15px;
+            color: $veraxity-card-bg;
+            text-decoration: none;
+        }
+
+        .veraxity-lp-nav__actions {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .veraxity-lp-btn { justify-content: center; }
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-nav__wordmark {
+    font-family: $lp-font-serif-rtl;
+    font-weight: 700;
+}
+
+html[dir="rtl"] .veraxity-lp-nav__links a,
+html[dir="rtl"] .veraxity-lp-nav__mobile-panel a {
+    font-family: $lp-font-sans-rtl;
+    font-weight: 600;
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-nav {
+        padding: 0 1.25rem;
+
+        // Direct children only — .veraxity-lp-nav__actions is reused inside
+        // __mobile-panel for the open menu's own copy of the buttons, which
+        // must stay visible.
+        > .veraxity-lp-nav__links, > .veraxity-lp-nav__actions { display: none; }
+        &__toggle { display: flex; }
+        &__mobile-panel { padding: 1.25rem; }
+    }
+}
+
+// ── Hero ─────────────────────────────────────────────────────────────────
+.veraxity-lp-hero {
+    position: relative;
+    overflow: hidden;
+    background: $body-color;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+
+    &__photo {
         position: absolute;
         inset: 0;
         background-image:
-            linear-gradient(rgba($veraxity-card-bg, .07) 1px, transparent 1px),
-            linear-gradient(90deg, rgba($veraxity-card-bg, .07) 1px, transparent 1px);
-        background-size: 48px 48px;
+            linear-gradient(100deg, rgba($body-color, .96) 0%, rgba($body-color, .88) 28%, rgba($body-color, .55) 55%, rgba($body-color, .25) 100%),
+            linear-gradient(0deg, rgba($body-color, .7) 0%, rgba($body-color, 0) 40%),
+            url('https://images.pexels.com/photos/15238618/pexels-photo-15238618.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-size: cover;
+        background-position: center right;
     }
 
     &__inner {
         position: relative;
         z-index: 1;
-        max-width: 38rem;
+        max-width: $veraxity-content-maxwidth;
         width: 100%;
+        margin: 0 auto;
+        padding: 6rem 2.5rem 4rem;
     }
 
-    &__eyebrow,
-    &__title,
-    &__subtitle,
-    &__search,
-    &__divider,
-    &__cta {
-        animation: veraxity-fade-up .5s ease-out both;
-    }
+    &__content { max-width: 38.75rem; }
 
-    &__eyebrow { animation-delay: 0s; }
-    &__title { animation-delay: .08s; }
-    &__subtitle { animation-delay: .16s; }
-    &__search { animation-delay: .24s; }
-    &__divider { animation-delay: .3s; }
-    &__cta { animation-delay: .36s; }
+    &__label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: $lp-font-mono;
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: $primary;
+        background: rgba($primary, .1);
+        border: 1px solid rgba($primary, .25);
+        border-radius: 9999px;
+        padding: 6px 14px;
+        margin-bottom: 1.5rem;
 
-    @media (prefers-reduced-motion: reduce) {
-        &__eyebrow, &__title, &__subtitle, &__search, &__divider, &__cta {
-            animation: none;
+        &::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: $primary;
         }
+    }
+
+    &__title {
+        font-family: $lp-font-serif;
+        font-size: clamp(2.375rem, calc(3vw + 1.75rem), 3.625rem);
+        font-weight: 600;
+        color: $veraxity-card-bg;
+        line-height: 1.08;
+        letter-spacing: -0.01em;
+        margin-bottom: 1.375rem;
+
+        em { font-style: italic; color: $primary; }
+    }
+
+    &__desc {
+        font-family: $lp-font-sans;
+        font-size: 17.5px;
+        color: rgba($veraxity-card-bg, .72);
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        max-width: 32.5rem;
+    }
+
+    &__cta-row {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 3.5rem;
+        flex-wrap: wrap;
+    }
+
+    &__stats {
+        display: flex;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+        padding-top: 1.75rem;
+        border-top: 1px solid rgba($veraxity-card-bg, .12);
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-hero {
+    &__photo {
+        background-image:
+            linear-gradient(260deg, rgba($body-color, .96) 0%, rgba($body-color, .88) 28%, rgba($body-color, .55) 55%, rgba($body-color, .25) 100%),
+            linear-gradient(0deg, rgba($body-color, .7) 0%, rgba($body-color, 0) 40%),
+            url('https://images.pexels.com/photos/15238618/pexels-photo-15238618.jpeg?auto=compress&cs=tinysrgb&w=1920');
+        background-position: center left;
+    }
+
+    &__label { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
+    &__title { font-family: $lp-font-serif-rtl; font-weight: 700; line-height: 1.3; }
+    &__desc { font-family: $lp-font-sans-rtl; }
+}
+
+.veraxity-lp-stat {
+    &__label {
+        font-family: $lp-font-mono;
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba($veraxity-card-bg, .45);
+        margin-bottom: 6px;
+    }
+
+    &__value {
+        font-family: $lp-font-serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: $veraxity-card-bg;
+        line-height: 1;
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-stat {
+    &__label { font-family: $lp-font-sans-rtl; font-weight: 600; letter-spacing: 0.02em; text-transform: none; }
+    &__value { font-family: $lp-font-serif-rtl; font-weight: 700; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-hero {
+        min-height: auto;
+
+        &__inner { padding: 3.5rem 1.25rem 3rem; }
+        &__title { font-size: 2.375rem; }
+        &__desc { font-size: 15.5px; }
+        &__stats { gap: 1.5rem; }
+    }
+}
+
+// ── Feature strip ───────────────────────────────────────────────────────
+.veraxity-lp-strip {
+    background: $veraxity-card-bg;
+    border-bottom: 1px solid $border-color;
+    padding: 1.375rem 2.5rem;
+
+    &__inner {
+        max-width: $veraxity-content-maxwidth;
+        margin: 0 auto;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    &__pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: $lp-font-mono;
+        font-size: 10.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: $veraxity-charcoal-light;
+        background: $white;
+        border: 1px solid $border-color;
+        border-radius: 9999px;
+        padding: 8px 16px;
+
+        svg { width: 13px; height: 13px; color: $secondary; flex-shrink: 0; }
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-strip__pill {
+    font-family: $lp-font-sans-rtl;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-strip {
+        padding: 1rem 1.25rem;
+
+        &__inner { justify-content: flex-start; overflow-x: auto; }
+    }
+}
+
+// ── Generic section shell (programs / why / how-it-works share this) ─────
+.veraxity-lp-section {
+    padding: 6rem 2.5rem;
+
+    &__inner { max-width: $veraxity-content-maxwidth; margin: 0 auto; }
+
+    &--dark { background: $body-color; }
+
+    &__head {
+        max-width: 35rem;
+        margin: 0 auto 3.5rem;
+        text-align: center;
     }
 
     &__eyebrow {
-        font-family: $font-family-sans-serif;
-        letter-spacing: 0.15em;
+        font-family: $lp-font-mono;
+        font-size: 10px;
+        letter-spacing: 0.22em;
         text-transform: uppercase;
-        font-size: 0.8rem;
-        color: $primary;
-        margin-bottom: 0.75rem;
+        color: $secondary;
+        margin-bottom: 14px;
     }
+
+    &--dark &__eyebrow { color: $primary; }
 
     &__title {
-        font-family: $headings-font-family;
-        font-weight: $headings-font-weight;
-        font-size: clamp(2.5rem, calc(4vw + 1.5rem), 4.25rem);
-        line-height: 1.1;
-        color: $veraxity-card-bg;
-        margin-bottom: 1rem;
-    }
-
-    &__subtitle {
-        font-family: $font-family-sans-serif;
-        font-size: 1.1rem;
-        color: $veraxity-card-bg;
-        max-width: 42rem;
-        margin: 0 auto;
-        opacity: 0.8;
-    }
-
-    &__search {
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-        max-width: 30rem;
-        margin: 2.5rem auto 0;
-        padding-bottom: .6rem;
-        border-bottom: 1px solid rgba($veraxity-card-bg, .25);
-        transition: border-color .15s ease-in-out;
-
-        &:focus-within {
-            border-color: $primary;
-        }
-    }
-
-    &__search-input {
-        flex: 1 1 auto;
-        min-width: 0;
-        border: none;
-        background: transparent;
-        padding: 0;
-        font-family: $font-family-sans-serif;
-        font-size: .95rem;
-        color: $veraxity-card-bg;
-
-        &::placeholder {
-            color: rgba($veraxity-card-bg, .45);
-        }
-
-        &:focus {
-            outline: none;
-        }
-    }
-
-    &__search-submit {
-        flex: 0 0 auto;
-        border: none;
-        background: transparent;
-        color: $primary;
-        padding: 0;
-        line-height: 0;
-        transition: color .15s ease-in-out;
-
-        &:hover,
-        &:focus-visible {
-            color: $secondary;
-        }
-    }
-
-    &__divider {
-        display: flex;
-        align-items: center;
-        gap: .75rem;
-        max-width: 22rem;
-        margin: 1.75rem auto 0;
-        font-family: $font-family-sans-serif;
-        font-size: .75rem;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: rgba($veraxity-card-bg, .45);
-
-        &::before,
-        &::after {
-            content: '';
-            flex: 1 1 auto;
-            height: 1px;
-            background-color: rgba($veraxity-card-bg, .18);
-        }
-    }
-
-    &__cta {
-        display: inline-block;
-        margin-top: 1.75rem;
-        padding: .65rem 1.75rem;
-        font-family: $font-family-sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.8rem;
-        font-weight: 500;
+        font-family: $lp-font-serif;
+        font-size: 38px;
+        font-weight: 600;
         color: $body-color;
-        background-color: $primary;
-        border-radius: $border-radius;
-        text-decoration: none;
-        transition: background-color .15s ease-in-out;
+        line-height: 1.15;
+        margin-bottom: 14px;
 
-        &:hover {
-            background-color: $secondary;
-            color: $veraxity-card-bg;
-        }
+        em { font-style: italic; color: $secondary; }
+    }
+
+    &--dark &__title {
+        color: $veraxity-card-bg;
+
+        em { color: $primary; }
+    }
+
+    &__sub {
+        font-family: $lp-font-sans;
+        font-size: 15.5px;
+        color: $veraxity-charcoal-light;
+        line-height: 1.7;
+    }
+
+    &--dark &__sub { color: rgba($veraxity-card-bg, .55); }
+}
+
+html[dir="rtl"] .veraxity-lp-section {
+    &__eyebrow { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.04em; text-transform: none; }
+    &__title { font-family: $lp-font-serif-rtl; font-weight: 700; line-height: 1.35; }
+    &__sub { font-family: $lp-font-sans-rtl; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-section {
+        padding: 4rem 1.25rem;
+
+        &__title { font-size: 28px; }
     }
 }
 
-// "Why Veraxity" — three value props between the hero and the course
-// listing, numbered like the terminal entries below (01/, 02/, 03/) so the
-// page reads as one consistent visual system rather than a generic
-// icon-card section bolted onto a terminal-themed page.
-.veraxity-values {
-    max-width: $veraxity-content-maxwidth;
-    margin: 3.5rem auto 0;
-    padding: 0 1.5rem;
+// ── Program cards ────────────────────────────────────────────────────────
+.veraxity-lp-programs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.veraxity-lp-program {
+    position: relative;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 28px 26px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+
+    &:hover {
+        border-color: $secondary;
+        box-shadow: 0 16px 36px rgba($body-color, .1);
+        transform: translateY(-3px);
+    }
+
+    &__icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: $veraxity-gold-pale;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+
+        svg { width: 22px; height: 22px; color: $veraxity-gold-dark; }
+    }
+
+    &__pill {
+        display: inline-block;
+        font-family: $lp-font-mono;
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background: $veraxity-card-bg;
+        color: $veraxity-charcoal-light;
+        border: 1px solid $border-color;
+        margin-bottom: 14px;
+        width: fit-content;
+
+        &--pilot {
+            background: $body-color;
+            color: $primary;
+            border-color: transparent;
+        }
+    }
+
+    &__title {
+        font-family: $lp-font-serif;
+        font-size: 22px;
+        font-weight: 600;
+        color: $body-color;
+        line-height: 1.2;
+        margin-bottom: 10px;
+    }
+
+    &__desc {
+        font-family: $lp-font-sans;
+        font-size: 13.5px;
+        color: $veraxity-charcoal-light;
+        line-height: 1.65;
+        margin-bottom: 20px;
+        flex: 1;
+    }
+
+    &__meta {
+        font-family: $lp-font-mono;
+        font-size: 10.5px;
+        letter-spacing: 0.04em;
+        color: $veraxity-charcoal-light;
+        padding-top: 14px;
+        margin-bottom: 14px;
+        border-top: 1px solid $border-color;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: $lp-font-mono;
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: $secondary;
+        text-decoration: none;
+
+        svg { width: 12px; height: 12px; transition: transform 0.15s; }
+    }
+
+    &:hover &__link svg { transform: translateX(3px); }
+
+    &--placeholder {
+        background: transparent;
+        border: 1px dashed $border-color;
+        justify-content: flex-start;
+
+        .veraxity-lp-program__title { color: $veraxity-charcoal-light; }
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-program {
+    &:hover &__link svg { transform: translateX(-3px); }
+
+    &__pill { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
+    &__title { font-family: $lp-font-serif-rtl; font-weight: 700; }
+    &__desc { font-family: $lp-font-sans-rtl; }
+    &__meta { font-family: $lp-font-sans-rtl; font-weight: 600; letter-spacing: normal; }
+    &__link { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: normal; text-transform: none; }
+}
+
+@media (max-width: 61.25rem) {
+    .veraxity-lp-programs { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-programs { grid-template-columns: 1fr; }
+}
+
+// ── Quote band ───────────────────────────────────────────────────────────
+.veraxity-lp-quote {
+    background: $veraxity-gold-pale;
+    padding: 4rem 2.5rem;
+    text-align: center;
+
+    &__text {
+        max-width: 45rem;
+        margin: 0 auto 18px;
+        font-family: $lp-font-serif;
+        font-style: italic;
+        font-size: 28px;
+        font-weight: 500;
+        color: $veraxity-gold-dark;
+        line-height: 1.4;
+    }
+
+    &__attr {
+        font-family: $lp-font-mono;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: $veraxity-charcoal-light;
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-quote {
+    &__text { font-family: $lp-font-serif-rtl; font-weight: 700; }
+    &__attr { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.03em; text-transform: none; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-quote__text { font-size: 21px; }
+}
+
+// ── Why / platform features grid ────────────────────────────────────────
+.veraxity-lp-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px 32px;
+}
+
+.veraxity-lp-feature {
+    &__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 9999px;
+        background: rgba($primary, .1);
+        border: 1px solid rgba($primary, .25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+
+        svg { width: 18px; height: 18px; color: $primary; }
+    }
+
+    &__title {
+        font-family: $lp-font-serif;
+        font-size: 19px;
+        font-weight: 600;
+        color: $veraxity-card-bg;
+        margin-bottom: 8px;
+    }
+
+    &__desc {
+        font-family: $lp-font-sans;
+        font-size: 13.5px;
+        color: rgba($veraxity-card-bg, .55);
+        line-height: 1.65;
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-feature {
+    &__title { font-family: $lp-font-serif-rtl; font-weight: 700; }
+    &__desc { font-family: $lp-font-sans-rtl; }
+}
+
+@media (max-width: 61.25rem) {
+    .veraxity-lp-feature-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-feature-grid { grid-template-columns: 1fr; }
+}
+
+// ── How it works ─────────────────────────────────────────────────────────
+.veraxity-lp-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+}
+
+.veraxity-lp-step {
+    position: relative;
+    padding: 0 18px;
+    text-align: start;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 19px;
+        inset-inline: -18px;
+        height: 1px;
+        background: $border-color;
+        z-index: 0;
+    }
+
+    &:first-child::before { inset-inline-start: 50%; }
+    &:last-child::before { inset-inline-end: 50%; }
+
+    &__num {
+        position: relative;
+        z-index: 1;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: $body-color;
+        color: $primary;
+        font-family: $lp-font-mono;
+        font-size: 13px;
+        direction: ltr;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+    }
+
+    &__title {
+        font-family: $lp-font-serif;
+        font-size: 19px;
+        font-weight: 600;
+        color: $body-color;
+        margin-bottom: 8px;
+    }
+
+    &__desc {
+        font-family: $lp-font-sans;
+        font-size: 13px;
+        color: $veraxity-charcoal-light;
+        line-height: 1.6;
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-step {
+    &__title { font-family: $lp-font-serif-rtl; font-weight: 700; }
+    &__desc { font-family: $lp-font-sans-rtl; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-steps { grid-template-columns: 1fr; gap: 32px; }
+    .veraxity-lp-step::before { display: none; }
+}
+
+// ── CTA banner ───────────────────────────────────────────────────────────
+.veraxity-lp-cta {
+    background: $body-color;
+    padding: 5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    &__ring {
+        position: absolute;
+        top: 50%;
+        inset-inline-start: 50%;
+        width: 30rem;
+        height: 30rem;
+        border: 1px solid rgba($primary, .12);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    &__inner { position: relative; z-index: 1; }
+
+    &__title {
+        font-family: $lp-font-serif;
+        font-size: 36px;
+        font-weight: 600;
+        color: $veraxity-card-bg;
+        margin-bottom: 14px;
+
+        em { font-style: italic; color: $primary; }
+    }
+
+    &__desc {
+        font-family: $lp-font-sans;
+        font-size: 15px;
+        color: rgba($veraxity-card-bg, .55);
+        max-width: 28.75rem;
+        margin: 0 auto 28px;
+        line-height: 1.7;
+    }
+}
+
+html[dir="rtl"] .veraxity-lp-cta {
+    &__title { font-family: $lp-font-serif-rtl; font-weight: 700; }
+    &__desc { font-family: $lp-font-sans-rtl; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-cta {
+        padding: 3.5rem 1.25rem;
+
+        &__title { font-size: 27px; }
+    }
+}
+
+// ── Footer ───────────────────────────────────────────────────────────────
+.veraxity-lp-footer {
+    background: $body-color;
+    border-top: 1px solid rgba($veraxity-card-bg, .06);
+    padding: 4rem 2.5rem 1.75rem;
+
+    &__inner { max-width: $veraxity-content-maxwidth; margin: 0 auto; }
 
     &__grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-        border-top: 1px solid $border-color;
-        padding-top: 2rem;
-
-        @media (max-width: 48rem) {
-            grid-template-columns: 1fr;
-            gap: 1.75rem;
-        }
+        grid-template-columns: 1.4fr 1fr 1fr 1fr;
+        gap: 32px;
+        margin-bottom: 3rem;
     }
 
-    &__index {
-        display: block;
-        font-family: $font-family-sans-serif;
-        font-size: .85rem;
-        font-weight: 500;
+    &__brand-desc {
+        font-family: $lp-font-sans;
+        font-size: 13px;
+        color: rgba($veraxity-card-bg, .45);
+        line-height: 1.7;
+        max-width: 17.5rem;
+        margin-top: 14px;
+    }
+
+    &__col-title {
+        font-family: $lp-font-mono;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
         color: $primary;
-        margin-bottom: .5rem;
+        margin-bottom: 16px;
     }
 
-    &__title {
-        font-family: $headings-font-family;
-        font-weight: $headings-font-weight;
-        font-size: 1.15rem;
-        color: $body-color;
-        margin-bottom: .4rem;
+    &__col a {
+        display: block;
+        font-family: $lp-font-sans;
+        font-size: 13px;
+        color: rgba($veraxity-card-bg, .55);
+        text-decoration: none;
+        margin-bottom: 12px;
+        transition: color 0.15s;
+
+        &:hover { color: $primary; }
     }
 
-    &__body {
-        font-family: $font-family-sans-serif;
-        font-size: .85rem;
-        color: $body-color;
-        opacity: .7;
-        line-height: 1.6;
-        margin-bottom: 0;
+    &__bottom {
+        font-family: $lp-font-sans;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba($veraxity-card-bg, .08);
+        font-size: 12px;
+        color: rgba($veraxity-card-bg, .35);
     }
 }
 
-// The signature: the course catalogue as a terminal directory listing.
-// Veraxity is a software architect's academy — this is the artifact that
-// subject actually produces, not a generic card grid or stat-block.
-.veraxity-terminal {
-    max-width: $veraxity-content-maxwidth;
-    margin: 3rem auto 4rem;
-    padding: 0 1.5rem;
+html[dir="rtl"] .veraxity-lp-footer {
+    &__brand-desc, &__col a, &__bottom { font-family: $lp-font-sans-rtl; }
+    &__col-title { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.03em; text-transform: none; }
+}
 
-    &__chrome {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        background-color: $body-color;
-        padding: .65rem 1rem;
-        border: 1px solid $body-color;
+@media (max-width: 61.25rem) {
+    .veraxity-lp-footer__grid { grid-template-columns: 1.2fr 1fr 1fr; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-lp-footer {
+        padding: 3rem 1.25rem 1.5rem;
+
+        &__grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+
+            .veraxity-lp-footer__col:first-child { grid-column: span 2; }
+        }
+    }
+}
+
+// Plugin-injected links (data privacy retention summary, mobile app
+// download) from standard_footer_html() — styled to read as a continuation
+// of the dark footer above instead of an unstyled white strip after it.
+.veraxity-lp-footer-extra {
+    background: $body-color;
+    padding: 0 2.5rem 1.75rem;
+    text-align: center;
+    font-family: $lp-font-sans;
+    font-size: 12px;
+
+    > div {
+        display: inline-block;
+        margin: 0 .6rem;
     }
 
-    &__dot {
-        width: .55rem;
-        height: .55rem;
-        border-radius: 50%;
-        flex: 0 0 auto;
-
-        &--1 { background-color: $primary; }
-        &--2 { background-color: $secondary; }
-        &--3 { background-color: $veraxity-card-bg; }
-    }
-
-    &__title {
-        margin-inline-start: .75rem;
-        font-family: $font-family-sans-serif;
-        font-size: .8rem;
-        color: $veraxity-card-bg;
-        opacity: .8;
-    }
-
-    &__body {
-        background-color: $veraxity-card-bg;
-        border: 1px solid $border-color;
-        border-top: none;
-        padding: 1.5rem;
-    }
-
-    &__line {
-        font-family: $font-family-sans-serif;
-        font-size: .9rem;
-        color: $body-color;
-        margin-bottom: .5rem;
-    }
-
-    &__prompt {
-        color: $primary;
-        margin-inline-end: .5rem;
-    }
-
-    &__comment {
-        font-family: $font-family-sans-serif;
-        font-size: .8rem;
-        color: $body-color;
-        opacity: .55;
-        margin-bottom: 1.25rem;
-    }
-
-    &__entries {
-        display: flex;
-        flex-direction: column;
-    }
-
-    &__viewall {
-        color: $primary;
+    a {
+        color: rgba($veraxity-card-bg, .45);
         text-decoration: underline;
-        text-decoration-color: rgba($primary, .35);
+        text-decoration-color: rgba($veraxity-card-bg, .2);
 
-        &:hover {
-            color: $secondary;
-        }
+        &:hover { color: $primary; }
     }
+}
 
-    &__entry {
-        display: flex;
-        align-items: baseline;
-        gap: 1rem;
-        padding: .85rem .75rem;
-        margin: 0 -.75rem;
-        border-inline-start: 3px solid transparent;
-        text-decoration: none;
-        transition: border-inline-start-color .15s ease-in-out, background-color .15s ease-in-out;
+html[dir="rtl"] .veraxity-lp-footer-extra {
+    font-family: $lp-font-sans-rtl;
+}
 
-        &:hover,
-        &:focus-visible {
-            border-inline-start-color: $primary;
-            background-color: rgba(186, 117, 23, .08);
+@media (max-width: 47.5rem) {
+    .veraxity-lp-footer-extra { padding: 0 1.25rem 1.5rem; }
+}
 
-            .veraxity-terminal__entry-title {
-                color: $primary;
-            }
+// ── Scroll to top ────────────────────────────────────────────────────────
+.veraxity-lp-scrolltop {
+    position: fixed;
+    bottom: 28px;
+    inset-inline-end: 28px;
+    z-index: 50;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba($secondary, .4);
+    border-radius: 9999px;
+    background: rgba($body-color, .85);
+    backdrop-filter: blur(4px);
+    color: $primary;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, background 0.18s, border-color 0.18s;
+    box-shadow: 0 4px 16px rgba($body-color, .25);
 
-            .veraxity-terminal__entry-path {
-                color: $secondary;
-            }
-        }
-
-        // Below ~36rem, a wrapped multi-line title leaves the folio number
-        // floating beside only its first line, looking orphaned rather than
-        // attached to the entry. Stacking it above the title instead reads
-        // as a tag/label, which holds up regardless of how many lines wrap.
-        @media (max-width: 36rem) {
-            flex-direction: column;
-            align-items: stretch;
-            gap: .35rem;
-        }
-
-        &-path {
-            flex: 0 0 auto;
-            font-family: $font-family-sans-serif;
-            font-size: .85rem;
-            font-weight: 500;
-            color: $primary;
-            min-width: 2.5rem;
-            transition: color .15s ease-in-out;
-        }
-
-        &-body {
-            display: flex;
-            flex-direction: column;
-            gap: .3rem;
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        &-title {
-            font-family: $headings-font-family;
-            font-weight: $headings-font-weight;
-            font-size: 1.2rem;
-            color: $body-color;
-            transition: color .15s ease-in-out;
-        }
-
-        &-summary {
-            font-family: $font-family-sans-serif;
-            font-size: .82rem;
-            color: $body-color;
-            opacity: .65;
-            line-height: 1.5;
-        }
-    }
+    &.visible { opacity: 1; pointer-events: auto; }
+    &:hover { background: $body-color; border-color: rgba($secondary, .7); }
+    svg { width: 18px; height: 18px; }
 }

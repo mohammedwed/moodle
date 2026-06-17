@@ -1,7 +1,7 @@
 // Veraxity brand — Bootstrap/Boost variable overrides.
 // Colors and type pulled from veraxity.dev's compiled CSS design tokens.
 
-@import 'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@400;500&family=Tajawal:wght@400;500;700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap';
 
 // Core palette.
 $primary:    #ef9f27; // accent / brand amber
@@ -14,6 +14,14 @@ $border-color:       #d3d1c7;
 $input-border-color: #d3d1c7;
 $veraxity-card-bg:   #f1efe8; // card surface, slightly darker than the page background
 $veraxity-content-maxwidth: 72rem; // front-page sections — wider than Boost's 830px reading-width default
+
+// Landing-page-only tokens (academy-portal-concept mockup). Kept separate from
+// the core palette above since they're shades, not semantic roles — used only
+// by the .veraxity-lp-* front-page rules in brand-custom.scss.
+$veraxity-charcoal-mid:   #444441;
+$veraxity-charcoal-light: #5f5e5a;
+$veraxity-gold-dark:      #78490a;
+$veraxity-gold-pale:      #faeeda;
 
 // Veraxity pairs an editorial serif for headings with a monospace body —
 // distinctive, but it does make dense admin screens heavier to read.

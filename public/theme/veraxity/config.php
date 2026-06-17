@@ -30,6 +30,16 @@ $THEME->sheets = [];
 $THEME->editor_sheets = [];
 $THEME->usefallback = true;
 
+// Custom marketing-style nav/footer chrome, used only on the front page —
+// everywhere else keeps Boost's standard drawers layout unchanged.
+$THEME->layouts = [
+    'frontpage' => [
+        'file' => 'frontpage.php',
+        'regions' => [],
+        'options' => ['nonavbar' => true],
+    ],
+];
+
 $THEME->scss = function($theme) {
     return theme_veraxity_get_main_scss_content($theme);
 };
