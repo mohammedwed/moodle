@@ -3,49 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Overview Component — Embed Demo — EAAC × Veraxity</title>
+  <title>Course Overview Component — EAAC × Veraxity</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* ============================================================
-       HOST PAGE MOCKUP — for this demo only. Not part of the
-       embeddable component. Stand-in for "another site's master
-       page / template" so you can see the card sitting inside it.
-       ============================================================ */
+    /* Page-level only — centers the component for viewing. Not part of
+       the embeddable markup/styles below. */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, Helvetica, sans-serif; background: #eef0f3; color: #333; }
-    .host-banner {
-      background: #1d2733;
-      color: #cfd6de;
-      font-size: 12px;
-      text-align: center;
-      padding: 8px 16px;
-      letter-spacing: 0.03em;
-    }
-    .host-header {
-      background: #fff;
-      border-bottom: 1px solid #dde1e6;
-      padding: 16px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .host-logo { font-weight: 700; font-size: 18px; color: #1d2733; }
-    .host-nav { display: flex; gap: 24px; font-size: 13px; color: #5b6470; }
-    .host-main { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
-    .host-placeholder {
-      background: #fff;
-      border: 1px dashed #c7ccd2;
-      border-radius: 6px;
-      padding: 28px;
-      color: #9aa1a9;
-      font-size: 13px;
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .host-placeholder + .host-placeholder { margin-top: 32px; margin-bottom: 0; }
-    .host-footer { background: #1d2733; color: #8b94a0; font-size: 12px; text-align: center; padding: 24px; }
+    body { background: #F1EFE8; min-height: 100vh; padding: 48px 24px; }
 
     /* ============================================================
        EMBEDDABLE COMPONENT STYLES — copy everything from here down
@@ -54,21 +20,44 @@
        fall back to Georgia/sans-serif if the host page doesn't load
        Cormorant Garamond / DM Mono / Inter.
        ============================================================ */
-    .cov-card {
+    /* container-type lives on the outer wrapper rather than .cov-row itself —
+       a @container query can't restyle the element that defines the
+       container (self-referencing queries are ignored per spec), so the
+       row/card/boxes have to be descendants of the container, not it. */
+    .cov-embed {
       container-type: inline-size;
-      max-width: 880px;
+      max-width: 900px;
       margin: 0 auto;
+      font-family: 'Inter', Arial, sans-serif;
+      color: #2C2C2A;
+    }
+    .cov-row {
+      display: grid;
+      grid-template-columns: minmax(240px, 320px) 1fr;
+      align-items: start;
+      gap: 20px;
+    }
+    .cov-side {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 0;
+    }
+    .cov-card,
+    .cov-objectives-box,
+    .cov-structure-box {
+      min-width: 0;
       background: #ffffff;
       border: 1px solid #D3D1C7;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(44,44,42,0.10);
-      font-family: 'Inter', Arial, sans-serif;
-      color: #2C2C2A;
+      box-shadow: 0 10px 30px rgba(44,44,42,0.08);
     }
+
+    /* ── Course card ── */
     /* Moodle course-card images are landscape, 16:9 or 3:2 (e.g. 800x450) —
        a tall/portrait crop gets cut off badly in course catalogue grids, so
-       the banner here is fixed to 16:9 rather than a side column. */
+       the banner here is fixed to 16:9. */
     .cov-media { position: relative; background: #2C2C2A; aspect-ratio: 16 / 9; overflow: hidden; }
     .cov-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .cov-badge {
@@ -88,70 +77,91 @@
       padding: 5px 11px;
     }
 
-    .cov-info { padding: 24px 28px; }
+    .cov-info { padding: 20px 22px 4px; }
     .cov-title {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 600;
-      font-size: 27px;
-      line-height: 1.15;
+      font-size: 22px;
+      line-height: 1.2;
       color: #2C2C2A;
       margin-bottom: 8px;
     }
     .cov-subtitle {
-      font-size: 13px;
+      font-size: 12.5px;
       color: #5F5E5A;
       line-height: 1.6;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .cov-meta {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       padding-top: 14px;
+      margin-top: 4px;
       border-top: 1px solid #EDEBE3;
     }
-    .cov-meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .cov-meta-row { display: flex; align-items: flex-start; gap: 10px; }
     .cov-meta-icon {
-      width: 22px; height: 22px;
-      display: flex; align-items: center; justify-content: center;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #BA7517;
+      flex-shrink: 0;
     }
     .cov-meta-icon svg { width: 15px; height: 15px; }
     .cov-meta-label {
       font-family: 'DM Mono', monospace;
       font-size: 8.5px;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #9a988f;
+      margin-bottom: 3px;
     }
-    .cov-meta-value { font-size: 12px; font-weight: 600; color: #2C2C2A; line-height: 1.3; }
+    .cov-meta-value { font-size: 12.5px; font-weight: 600; color: #2C2C2A; line-height: 1.3; }
 
-    .cov-body { padding: 22px 28px 0; }
+    .cov-cta { padding: 18px 22px 22px; }
+    .cov-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .cov-btn-gold { color: #2C2C2A; background: #EF9F27; border: 1px solid transparent; }
+
+    /* ── Shared box header ── */
     .cov-section-label {
       font-family: 'DM Mono', monospace;
       font-size: 9.5px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: #BA7517;
-      margin-bottom: 10px;
-    }
-    .cov-objectives {
-      font-size: 13.5px;
-      color: #5F5E5A;
-      line-height: 1.75;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #EDEBE3;
+      margin-bottom: 12px;
     }
 
-    .cov-structure { padding: 18px 0 4px; list-style: none; }
+    /* ── Learning objectives box ── */
+    .cov-objectives-box { padding: 22px 24px; }
+    .cov-objectives { font-size: 13.5px; color: #5F5E5A; line-height: 1.8; }
+
+    /* ── Course structure box ── */
+    .cov-structure-box { padding: 22px 24px; }
+    .cov-structure { list-style: none; }
     .cov-structure-item {
       display: flex;
       align-items: baseline;
       gap: 12px;
       padding: 9px 0;
+      border-bottom: 1px solid #EDEBE3;
     }
+    .cov-structure-item:last-child { border-bottom: none; }
     .cov-structure-num {
       font-family: 'DM Mono', monospace;
       font-size: 10.5px;
@@ -174,8 +184,7 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 12px 0 18px;
-      border-top: 1px dashed #D3D1C7;
+      padding-top: 14px;
       margin-top: 4px;
     }
     .cov-structure-total-label {
@@ -192,35 +201,14 @@
       color: #78490A;
     }
 
-    .cov-footer {
-      background: #FAF8F2;
-      border-top: 1px solid #EDEBE3;
-      padding: 16px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-    .cov-btn {
-      display: inline-flex;
-      align-items: center;
-      font-size: 12.5px;
-      font-weight: 600;
-      text-decoration: none;
-      padding: 9px 18px;
-      border-radius: 9999px;
-      white-space: nowrap;
-    }
-    .cov-btn-gold { color: #2C2C2A; background: #EF9F27; border: 1px solid transparent; }
-
-    /* Component adapts to its own rendered width, not the viewport —
-       so it behaves the same whether it's full-width or stuck in a
-       narrow sidebar of the host template. */
-    @container (max-width: 480px) {
-      .cov-meta { grid-template-columns: repeat(2, 1fr); }
+    /* The row adapts to its own rendered width, not the viewport — so it
+       behaves the same whether it's full-width or embedded in a narrower
+       column of the host template. */
+    @container (max-width: 640px) {
+      .cov-row { grid-template-columns: 1fr; }
     }
     @container (max-width: 380px) {
-      .cov-title { font-size: 22px; }
+      .cov-title { font-size: 21px; }
       .cov-structure-desc { display: none; }
     }
     /* ============================================================
@@ -230,113 +218,113 @@
 </head>
 <body>
 
-  <div class="host-banner">Host page mockup — everything below simulates an existing site template. The card in the middle is the actual deliverable.</div>
-  <header class="host-header">
-    <div class="host-logo">Acme Corporate Training</div>
-    <div class="host-nav"><span>Catalog</span><span>Pricing</span><span>About</span><span>Sign In</span></div>
-  </header>
-
-  <main class="host-main">
-    <div class="host-placeholder">↑ rest of the host page (breadcrumbs, filters, other catalog cards, etc.)</div>
-
-    <!-- ============================================================
-         EMBEDDABLE COURSE OVERVIEW COMPONENT — copy this block as-is
-         into any page template along with the .cov- styles above.
-         ============================================================ -->
+  <!-- ============================================================
+       EMBEDDABLE COURSE OVERVIEW COMPONENT — copy this block as-is
+       into any page template along with the .cov- styles above.
+       ============================================================ -->
+  <div class="cov-embed">
+  <div class="cov-row">
     <section class="cov-card">
-      <div class="cov-top">
-        <div class="cov-media">
-          <span class="cov-badge">New Cohort</span>
-          <img src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Team reviewing marketing campaign analytics" />
-        </div>
-        <div class="cov-info">
-          <h2 class="cov-title">Digital Marketing Fundamentals</h2>
-          <p class="cov-subtitle">A practical introduction to modern marketing — audience research, channel strategy, and campaign basics.</p>
-          <div class="cov-meta">
-            <div class="cov-meta-item">
-              <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></div>
+      <div class="cov-media">
+        <span class="cov-badge">New Cohort</span>
+        <img src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Team reviewing marketing campaign analytics" />
+      </div>
+      <div class="cov-info">
+        <h2 class="cov-title">Digital Marketing Fundamentals</h2>
+        <p class="cov-subtitle">A practical introduction to modern marketing — audience research, channel strategy, and campaign basics.</p>
+        <div class="cov-meta">
+          <div class="cov-meta-row">
+            <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></div>
+            <div>
               <div class="cov-meta-label">Instructor</div>
               <div class="cov-meta-value">Yara Mansour</div>
             </div>
-            <div class="cov-meta-item">
-              <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          </div>
+          <div class="cov-meta-row">
+            <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+            <div>
               <div class="cov-meta-label">Duration</div>
               <div class="cov-meta-value">6 Sessions · 18 Hrs</div>
             </div>
-            <div class="cov-meta-item">
-              <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V6a2 2 0 0 1 2-2h13v15"/><path d="M4 19a2 2 0 0 0 2 2h13"/><path d="M9 7h7M9 11h7"/></svg></div>
+          </div>
+          <div class="cov-meta-row">
+            <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V6a2 2 0 0 1 2-2h13v15"/><path d="M4 19a2 2 0 0 0 2 2h13"/><path d="M9 7h7M9 11h7"/></svg></div>
+            <div>
               <div class="cov-meta-label">Format</div>
-              <div class="cov-meta-value">Blended</div>
+              <div class="cov-meta-value">Blended — In-Person &amp; Online</div>
             </div>
-            <div class="cov-meta-item">
-              <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z"/></svg></div>
+          </div>
+          <div class="cov-meta-row">
+            <div class="cov-meta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z"/></svg></div>
+            <div>
               <div class="cov-meta-label">Language</div>
-              <div class="cov-meta-value">Arabic · EN Materials</div>
+              <div class="cov-meta-value">Arabic · English Materials</div>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="cov-body">
-        <div class="cov-section-label">Learning Objectives</div>
-        <p class="cov-objectives">Learners leave able to plan a complete marketing campaign from a blank page: defining a real audience instead of guessing, choosing the channels that actually reach them, setting a budget that matches the goal, and tracking the few metrics that honestly show whether it's working.</p>
-
-        <div class="cov-section-label" style="margin-top: 18px;">Course Structure</div>
-        <ol class="cov-structure">
-          <li class="cov-structure-item">
-            <span class="cov-structure-num">01</span>
-            <span class="cov-structure-title">Foundations &amp; the Marketing Landscape</span>
-            <span class="cov-structure-desc">— core vocabulary &amp; channels</span>
-            <span class="cov-structure-dur">3 hrs</span>
-          </li>
-          <li class="cov-structure-item">
-            <span class="cov-structure-num">02</span>
-            <span class="cov-structure-title">Knowing Your Audience</span>
-            <span class="cov-structure-desc">— research over guesswork</span>
-            <span class="cov-structure-dur">3 hrs</span>
-          </li>
-          <li class="cov-structure-item">
-            <span class="cov-structure-num">03</span>
-            <span class="cov-structure-title">Channel Strategy</span>
-            <span class="cov-structure-desc">— owned, earned &amp; paid</span>
-            <span class="cov-structure-dur">3 hrs</span>
-          </li>
-          <li class="cov-structure-item">
-            <span class="cov-structure-num">04</span>
-            <span class="cov-structure-title">Content &amp; Messaging</span>
-            <span class="cov-structure-desc">— that actually converts</span>
-            <span class="cov-structure-dur">3 hrs</span>
-          </li>
-          <li class="cov-structure-item">
-            <span class="cov-structure-num">05</span>
-            <span class="cov-structure-title">Budgeting &amp; Metrics</span>
-            <span class="cov-structure-desc">— tracking what matters</span>
-            <span class="cov-structure-dur">3 hrs</span>
-          </li>
-          <li class="cov-structure-item">
-            <span class="cov-structure-num">06</span>
-            <span class="cov-structure-title">Capstone: Real Campaign</span>
-            <span class="cov-structure-desc">— start to finish</span>
-            <span class="cov-structure-dur">3 hrs</span>
-          </li>
-        </ol>
-        <div class="cov-structure-total">
-          <span class="cov-structure-total-label">Total Course Length</span>
-          <span class="cov-structure-total-value">18 Hrs</span>
-        </div>
-      </div>
-
-      <div class="cov-footer">
+      <div class="cov-cta">
         <a href="#" class="cov-btn cov-btn-gold">Enroll Now</a>
       </div>
     </section>
-    <!-- ============================================================
-         END EMBEDDABLE COURSE OVERVIEW COMPONENT
-         ============================================================ -->
 
-    <div class="host-placeholder">↓ rest of the host page (related courses, reviews, footer CTA, etc.)</div>
-  </main>
+    <div class="cov-side">
+    <section class="cov-objectives-box">
+      <div class="cov-section-label">Learning Objectives</div>
+      <p class="cov-objectives">Learners leave able to plan a complete marketing campaign from a blank page: defining a real audience instead of guessing, choosing the channels that actually reach them, setting a budget that matches the goal, and tracking the few metrics that honestly show whether it's working.</p>
+    </section>
 
-  <footer class="host-footer">Acme Corporate Training — host page mockup footer</footer>
+    <section class="cov-structure-box">
+      <div class="cov-section-label">Course Structure</div>
+      <ol class="cov-structure">
+        <li class="cov-structure-item">
+          <span class="cov-structure-num">01</span>
+          <span class="cov-structure-title">Foundations &amp; the Marketing Landscape</span>
+          <span class="cov-structure-desc">— core vocabulary &amp; channels</span>
+          <span class="cov-structure-dur">3 hrs</span>
+        </li>
+        <li class="cov-structure-item">
+          <span class="cov-structure-num">02</span>
+          <span class="cov-structure-title">Knowing Your Audience</span>
+          <span class="cov-structure-desc">— research over guesswork</span>
+          <span class="cov-structure-dur">3 hrs</span>
+        </li>
+        <li class="cov-structure-item">
+          <span class="cov-structure-num">03</span>
+          <span class="cov-structure-title">Channel Strategy</span>
+          <span class="cov-structure-desc">— owned, earned &amp; paid</span>
+          <span class="cov-structure-dur">3 hrs</span>
+        </li>
+        <li class="cov-structure-item">
+          <span class="cov-structure-num">04</span>
+          <span class="cov-structure-title">Content &amp; Messaging</span>
+          <span class="cov-structure-desc">— that actually converts</span>
+          <span class="cov-structure-dur">3 hrs</span>
+        </li>
+        <li class="cov-structure-item">
+          <span class="cov-structure-num">05</span>
+          <span class="cov-structure-title">Budgeting &amp; Metrics</span>
+          <span class="cov-structure-desc">— tracking what matters</span>
+          <span class="cov-structure-dur">3 hrs</span>
+        </li>
+        <li class="cov-structure-item">
+          <span class="cov-structure-num">06</span>
+          <span class="cov-structure-title">Capstone: Real Campaign</span>
+          <span class="cov-structure-desc">— start to finish</span>
+          <span class="cov-structure-dur">3 hrs</span>
+        </li>
+      </ol>
+      <div class="cov-structure-total">
+        <span class="cov-structure-total-label">Total Course Length</span>
+        <span class="cov-structure-total-value">18 Hrs</span>
+      </div>
+    </section>
+    </div>
+  </div>
+  </div>
+  <!-- ============================================================
+       END EMBEDDABLE COURSE OVERVIEW COMPONENT
+       ============================================================ -->
+
 </body>
 </html>
