@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أكاديمية إياك للتعلّم — نسخة تصميمية لبوابة الأكاديمية — Veraxity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --charcoal:       #2C2C2A;
+      --charcoal-mid:   #444441;
+      --charcoal-light: #5F5E5A;
+      --gold:           #BA7517;
+      --gold-dark:      #78490A;
+      --gold-light:     #EF9F27;
+      --gold-pale:      #FAEEDA;
+      --cream:          #F1EFE8;
+      --cream-dark:     #D3D1C7;
+      --white:          #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    .serif { font-family: 'Amiri', Georgia, serif; }
+    .mono  { font-family: 'DM Mono', monospace; }
+
+    .en {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9em;
+      direction: ltr;
+      display: inline-block;
+      color: var(--gold-dark);
+      background: var(--gold-pale);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    /* ── Concept meta bar ── */
+    .meta-bar {
+      background: var(--charcoal-mid);
+      padding: 9px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .meta-bar-text {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: rgba(241,239,232,0.55);
+    }
+    .meta-bar a {
+      color: var(--gold-light);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(239,159,39,0.4);
+    }
+    .meta-bar a:hover { border-bottom-style: solid; }
+
+    /* ── Site nav ── */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--charcoal);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 0 40px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-wordmark {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 23px;
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.2;
+      text-decoration: none;
+    }
+    .nav-wordmark span { color: var(--gold-light); font-style: italic; }
+    .nav-wordmark small {
+      display: block;
+      font-family: 'Cairo', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: rgba(241,239,232,0.4);
+      margin-top: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(241,239,232,0.7);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      color: var(--cream);
+      border: 1px solid rgba(241,239,232,0.18);
+      background: transparent;
+    }
+    .btn-ghost:hover { border-color: rgba(239,159,39,0.5); color: var(--gold-light); }
+
+    .btn-gold {
+      color: var(--charcoal);
+      background: var(--gold-light);
+      border: 1px solid transparent;
+    }
+    .btn-gold:hover { background: var(--cream); transform: translateY(-1px); }
+
+    .btn-outline-light {
+      color: var(--cream);
+      border: 1px solid rgba(241,239,232,0.35);
+      background: transparent;
+    }
+    .btn-outline-light:hover { border-color: var(--gold-light); color: var(--gold-light); }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .nav-toggle span {
+      width: 20px;
+      height: 1.5px;
+      background: var(--cream);
+    }
+
+    .nav-mobile-panel {
+      display: none;
+      position: absolute;
+      top: 72px;
+      left: 0;
+      right: 0;
+      background: var(--charcoal);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 20px 24px 28px;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 39;
+    }
+    .nav-mobile-panel.open { display: flex; }
+    .nav-mobile-panel a { font-size: 15px; font-weight: 600; color: var(--cream); text-decoration: none; }
+    .nav-mobile-panel .nav-actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 8px; }
+    .nav-mobile-panel .btn { justify-content: center; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--charcoal);
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-photo {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(260deg, rgba(44,44,42,0.96) 0%, rgba(44,44,42,0.88) 28%, rgba(44,44,42,0.55) 55%, rgba(44,44,42,0.25) 100%),
+        linear-gradient(0deg, rgba(44,44,42,0.7) 0%, rgba(44,44,42,0) 40%),
+        url('https://images.pexels.com/photos/15238618/pexels-photo-15238618.jpeg?auto=compress&cs=tinysrgb&w=1920');
+      background-size: cover;
+      background-position: center left;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1160px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 96px 40px 64px;
+    }
+
+    .hero-content { max-width: 640px; }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--gold-light);
+      background: rgba(239,159,39,0.1);
+      border: 1px solid rgba(239,159,39,0.25);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      margin-bottom: 24px;
+    }
+    .hero-label::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold-light);
+    }
+
+    .hero-title {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.3;
+      margin-bottom: 22px;
+    }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+
+    .hero-desc {
+      font-size: 17.5px;
+      color: rgba(241,239,232,0.75);
+      line-height: 1.9;
+      margin-bottom: 32px;
+      max-width: 540px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 56px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: rgba(241,239,232,0.45);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 27px;
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.3;
+    }
+
+    /* ── Feature strip ── */
+    .strip {
+      background: var(--cream);
+      border-bottom: 1px solid var(--cream-dark);
+      padding: 22px 40px;
+    }
+    .strip-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .strip-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--charcoal-light);
+      background: var(--white);
+      border: 1px solid var(--cream-dark);
+      border-radius: 9999px;
+      padding: 8px 16px;
+    }
+    .strip-pill svg { width: 13px; height: 13px; color: var(--gold); flex-shrink: 0; }
+
+    /* ── Generic section ── */
+    .section { padding: 96px 40px; }
+    .section-inner { max-width: 1160px; margin: 0 auto; }
+    .section.dark { background: var(--charcoal); }
+
+    .section-head {
+      max-width: 580px;
+      margin: 0 auto 56px;
+      text-align: center;
+    }
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .section.dark .section-eyebrow { color: var(--gold-light); }
+
+    .section-title {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.35;
+      margin-bottom: 14px;
+    }
+    .section.dark .section-title { color: var(--cream); }
+    .section-title em { font-style: italic; color: var(--gold); }
+    .section.dark .section-title em { color: var(--gold-light); }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--charcoal-light);
+      line-height: 1.85;
+    }
+    .section.dark .section-sub { color: rgba(241,239,232,0.55); }
+
+    /* ── Fade-up animation ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.in-view { opacity: 1; transform: translateY(0); }
+
+    /* ── Program cards ── */
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .program-card {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--cream-dark);
+      border-radius: 12px;
+      padding: 28px 26px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+    }
+    .program-card:hover {
+      border-color: var(--gold);
+      box-shadow: 0 16px 36px rgba(44,44,42,0.1);
+      transform: translateY(-3px);
+    }
+
+    .program-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--gold-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .program-icon svg { width: 22px; height: 22px; color: var(--gold-dark); }
+
+    .level-pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: var(--cream);
+      color: var(--charcoal-light);
+      border: 1px solid var(--cream-dark);
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+    .level-pill.pilot {
+      background: var(--charcoal);
+      color: var(--gold-light);
+      border-color: transparent;
+    }
+
+    .program-title {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 23px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .program-desc {
+      font-size: 14px;
+      color: var(--charcoal-light);
+      line-height: 1.8;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .program-meta {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--charcoal-light);
+      padding-top: 14px;
+      margin-bottom: 14px;
+      border-top: 1px solid var(--cream-dark);
+    }
+
+    .program-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .program-link svg { width: 12px; height: 12px; transition: transform 0.15s; }
+    .program-card:hover .program-link svg { transform: translateX(-3px); }
+
+    .program-card.placeholder {
+      background: transparent;
+      border: 1px dashed var(--cream-dark);
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .program-card.placeholder .program-title { color: var(--charcoal-light); }
+
+    /* ── Quote band ── */
+    .quote-band {
+      background: var(--gold-pale);
+      padding: 64px 40px;
+      text-align: center;
+    }
+    .quote-text {
+      max-width: 740px;
+      margin: 0 auto 18px;
+      font-family: 'Amiri', Georgia, serif;
+      font-style: italic;
+      font-size: 27px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      line-height: 1.6;
+    }
+    .quote-attr {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--charcoal-light);
+    }
+
+    /* ── Features grid ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px 32px;
+    }
+    .feature-item { }
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: rgba(239,159,39,0.1);
+      border: 1px solid rgba(239,159,39,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .feature-icon svg { width: 18px; height: 18px; color: var(--gold-light); }
+    .feature-title {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: rgba(241,239,232,0.55);
+      line-height: 1.8;
+    }
+
+    /* ── How it works ── */
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    .step {
+      position: relative;
+      padding: 0 18px;
+      text-align: right;
+    }
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 19px;
+      left: -18px;
+      right: -18px;
+      height: 1px;
+      background: var(--cream-dark);
+      z-index: 0;
+    }
+    .step:first-child::before { right: 50%; }
+    .step:last-child::before { left: 50%; }
+
+    .step-num {
+      position: relative;
+      z-index: 1;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--charcoal);
+      color: var(--gold-light);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      direction: ltr;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .step-title {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 8px;
+    }
+    .step-desc {
+      font-size: 13.5px;
+      color: var(--charcoal-light);
+      line-height: 1.75;
+    }
+
+    /* ── CTA banner ── */
+    .cta-banner {
+      background: var(--charcoal);
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 480px;
+      height: 480px;
+      border: 1px solid rgba(239,159,39,0.12);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    .cta-title {
+      font-family: 'Amiri', Georgia, serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 14px;
+    }
+    .cta-title em { font-style: italic; color: var(--gold-light); }
+    .cta-desc {
+      font-size: 15.5px;
+      color: rgba(241,239,232,0.55);
+      max-width: 480px;
+      margin: 0 auto 28px;
+      line-height: 1.85;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--charcoal);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 64px 40px 28px;
+    }
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+    .footer-brand-desc {
+      font-size: 13.5px;
+      color: rgba(241,239,232,0.45);
+      line-height: 1.85;
+      max-width: 300px;
+      margin-top: 14px;
+    }
+    .footer-col-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--gold-light);
+      margin-bottom: 16px;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 13.5px;
+      color: rgba(241,239,232,0.55);
+      text-decoration: none;
+      margin-bottom: 12px;
+      transition: color 0.15s;
+    }
+    .footer-col a:hover { color: var(--gold-light); }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 12.5px;
+      color: rgba(241,239,232,0.35);
+    }
+    .footer-bottom a {
+      color: var(--gold-light);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(239,159,39,0.4);
+    }
+    .footer-bottom a:hover { border-bottom-style: solid; }
+
+    /* ── Scroll to top ── */
+    .scroll-top {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      z-index: 50;
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(186,117,23,0.4);
+      border-radius: 9999px;
+      background: rgba(44,44,42,0.85);
+      backdrop-filter: blur(4px);
+      color: var(--gold-light);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, background 0.18s, border-color 0.18s;
+      box-shadow: 0 4px 16px rgba(44,44,42,0.25);
+    }
+    .scroll-top.visible { opacity: 1; pointer-events: auto; }
+    .scroll-top:hover { background: var(--charcoal); border-color: rgba(186,117,23,0.7); }
+    .scroll-top svg { width: 18px; height: 18px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 980px) {
+      .program-grid { grid-template-columns: repeat(2, 1fr); }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1.2fr 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .meta-bar { padding: 9px 20px; }
+      .site-nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .nav-actions { display: none; }
+      .nav-toggle { display: flex; }
+      .nav-mobile-panel { padding: 20px; }
+
+      .hero { min-height: auto; }
+      .hero-inner { padding: 56px 20px 48px; }
+      .hero-title { font-size: 36px; }
+      .hero-desc { font-size: 16px; }
+      .hero-stats { gap: 24px; }
+
+      .strip { padding: 16px 20px; }
+      .strip-inner { justify-content: flex-start; overflow-x: auto; }
+
+      .section { padding: 64px 20px; }
+      .section-title { font-size: 29px; }
+
+      .program-grid { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr; }
+
+      .steps-row { grid-template-columns: 1fr; gap: 32px; }
+      .step::before { display: none; }
+      .step { text-align: right; }
+
+      .quote-text { font-size: 21px; }
+
+      .cta-banner { padding: 56px 20px; }
+      .cta-title { font-size: 28px; }
+
+      .footer { padding: 48px 20px 24px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+      .footer-grid .footer-col:first-child { grid-column: span 2; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شريط المعاينة -->
+  <div class="meta-bar">
+    <div class="meta-bar-text">نسخة تصميمية · الصفحة الرئيسية لبوابة الأكاديمية</div>
+    <div class="meta-bar-text">إعداد <a href="https://veraxity.dev/founder" target="_blank">Veraxity</a> لـ EAAC · <a href="moodle-proposal-ar.html">عرض المقترح الكامل</a></div>
+  </div>
+
+  <!-- شريط التنقل -->
+  <nav class="site-nav">
+    <a href="#top" class="nav-wordmark"><span>أكاديمية</span> إياك للتعلّم<small>معاينة تصميمية</small></a>
+    <div class="nav-links">
+      <a href="#programs">البرامج</a>
+      <a href="#how-it-works">كيف تعمل</a>
+      <a href="#why">المنصة</a>
+      <a href="#contact">تواصل معنا</a>
+    </div>
+    <div class="nav-actions">
+      <a href="#contact" class="btn btn-ghost">تسجيل الدخول</a>
+      <a href="#programs" class="btn btn-gold">سجّل الآن</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="القائمة">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-mobile-panel" id="navMobilePanel">
+      <a href="#programs">البرامج</a>
+      <a href="#how-it-works">كيف تعمل</a>
+      <a href="#why">المنصة</a>
+      <a href="#contact">تواصل معنا</a>
+      <div class="nav-actions">
+        <a href="#contact" class="btn btn-ghost">تسجيل الدخول</a>
+        <a href="#programs" class="btn btn-gold">سجّل الآن</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- البطل -->
+  <header class="hero" id="top">
+    <div class="hero-photo"></div>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-label">الدفعة التجريبية · التسجيل قريباً</div>
+        <h1 class="hero-title">ابنِ المهارات التي <em>تأخذك إلى الأمام</em></h1>
+        <p class="hero-desc">تجمع أكاديمية إياك للتعلّم بين التدريب بإشراف مدرّبين والتطبيق العملي بمساعدة الذكاء الاصطناعي على منصة واحدة ثنائية اللغة — العربية والإنجليزية جنباً إلى جنب، من أول جلسة وحتى شهادتك.</p>
+        <div class="hero-cta-row">
+          <a href="#programs" class="btn btn-gold">تصفّح البرامج</a>
+          <a href="#how-it-works" class="btn btn-outline-light">كيف تعمل المنصة</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-label">مسارات عند الإطلاق</div>
+            <div class="stat-value">2</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">إجمالي الجلسات</div>
+            <div class="stat-value">12</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">ساعة لكل مسار</div>
+            <div class="stat-value">30</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">توازي اللغتين</div>
+            <div class="stat-value">عربي / إنجليزي</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- شريط الميزات -->
+  <div class="strip">
+    <div class="strip-inner">
+      <span class="strip-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z"/></svg>ثنائية اللغة: عربي / إنجليزي</span>
+      <span class="strip-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V6a2 2 0 0 1 2-2h13v15"/><path d="M4 19a2 2 0 0 0 2 2h13"/><path d="M9 7h7M9 11h7"/></svg>بإشراف مدرّب أو حسب وتيرتك</span>
+      <span class="strip-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg>تتبّع التقدّم</span>
+      <span class="strip-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="5"/><path d="M8 13l-2 8 6-3 6 3-2-8"/></svg>شهادات موثّقة</span>
+      <span class="strip-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg>متوافقة مع الهاتف المحمول</span>
+    </div>
+  </div>
+
+  <!-- البرامج -->
+  <section class="section" id="programs">
+    <div class="section-inner">
+      <div class="section-head fade-up">
+        <div class="section-eyebrow">البرامج</div>
+        <h2 class="section-title">اختر <em>مسارك</em></h2>
+        <p class="section-sub">مساران بمساعدة الذكاء الاصطناعي، كل واحد منهما يغطي دورة العمل كاملة من أولها إلى آخرها — وبقية برامج إياك تُضاف تباعاً.</p>
+      </div>
+      <div class="program-grid">
+        <div class="program-card fade-up">
+          <div class="level-pill pilot">دورة تجريبية</div>
+          <div class="program-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3 4 7l4 4M16 3l4 4-4 4"/><path d="M14 3 10 21"/></svg>
+          </div>
+          <h3 class="program-title">هندسة البرمجيات بمساعدة الذكاء الاصطناعي</h3>
+          <p class="program-desc">ست ورش عمل نصف يومية تتبع دورة حياة تطوير البرمجيات كاملة — المتطلبات، التصميم، البرمجة، الاختبار، النشر — كل واحدة تُبيّن أين يُسرّع الذكاء الاصطناعي العمل وأين يبقى القرار للمهندس.</p>
+          <div class="program-meta">6 جلسات · 30 ساعة · حضوري</div>
+          <a href="#contact" class="program-link">عرض البرنامج <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+        </div>
+        <div class="program-card fade-up">
+          <div class="level-pill">متمرّس</div>
+          <div class="program-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 3 7l9 5 9-5-9-5Z"/><path d="M3 7v10l9 5 9-5V7"/></svg>
+          </div>
+          <h3 class="program-title">الذكاء الاصطناعي لرواد الأعمال</h3>
+          <p class="program-desc">ست جلسات تتتبّع دورة حياة المشروع الناشئ — من الفكرة، إلى التحقق، نموذج العمل، الدخول إلى السوق، التشغيل، وحتى العرض النهائي — مع الذكاء الاصطناعي كشريك تدريب يبقى رائد الأعمال هو من يقود القرار فيه.</p>
+          <div class="program-meta">6 جلسات · 30 ساعة · حضوري</div>
+          <a href="#contact" class="program-link">عرض البرنامج <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+        </div>
+        <div class="program-card placeholder fade-up">
+          <div class="level-pill">قريباً</div>
+          <h3 class="program-title">برامج إضافية</h3>
+          <p class="program-desc">تُضاف مسارات جديدة كلما رفع مدرّبو إياك دوراتهم الحالية على المنصة — وتنمو القائمة من هنا.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- اقتباس -->
+  <div class="quote-band">
+    <p class="quote-text fade-up">«الذكاء الاصطناعي مُسرِّع وشريك تدريب — يصوغ المسودات، ويناقش الأفكار، ويولّد الخيارات — بينما يبقى كل قرار فعلي في يدك.»</p>
+    <div class="quote-attr">فلسفة أكاديمية إياك للتعلّم</div>
+  </div>
+
+  <!-- المنصة -->
+  <section class="section dark" id="why">
+    <div class="section-inner">
+      <div class="section-head fade-up">
+        <div class="section-eyebrow">المنصة</div>
+        <h2 class="section-title">لماذا تتعلّم <em>هنا</em></h2>
+        <p class="section-sub">منصة واحدة، مصمَّمة بحسب الطريقة الفعلية التي يسير بها متعلّمو إياك خلال البرنامج.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-item fade-up">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z"/></svg></div>
+          <div class="feature-title">ثنائية اللغة بالكامل</div>
+          <div class="feature-desc">العربية (من اليمين لليسار) والإنجليزية بتكافؤ كامل عبر الموقع والمنصة — لا توجد لغة من الدرجة الثانية.</div>
+        </div>
+        <div class="feature-item fade-up">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg></div>
+          <div class="feature-title">بإشراف مدرّب، ومُسرَّع بالذكاء الاصطناعي</div>
+          <div class="feature-desc">مدرّبون حقيقيون يقودون كل دفعة. الذكاء الاصطناعي يُسرّع التطبيق والتغذية الراجعة — لكنه لا يحلّ محل القرار البشري أبداً.</div>
+        </div>
+        <div class="feature-item fade-up">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg></div>
+          <div class="feature-title">تتبّع كل خطوة</div>
+          <div class="feature-desc">التقدّم، الدرجات، ونسبة الإنجاز مرئية للمتعلّم والمدرّب على حد سواء — لا يضيع شيء بين الجلسات.</div>
+        </div>
+        <div class="feature-item fade-up">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="feature-title">شهادات لها قيمة حقيقية</div>
+          <div class="feature-desc">تُمنح بعد التحقق من الإتمام، ومرتبطة بمهارات أثبتها المتعلّم فعلياً في الورشة — لا بمجرد الحضور.</div>
+        </div>
+        <div class="feature-item fade-up">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 19h4"/></svg></div>
+          <div class="feature-title">تعلّم من أي جهاز</div>
+          <div class="feature-desc">وصول كامل للدورة من الحاسوب، الجهاز اللوحي، والهاتف منذ اليوم الأول — بلا حاجة لتطبيق منفصل للبدء.</div>
+        </div>
+        <div class="feature-item fade-up">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+          <div class="feature-title">مبنيّة على منصة حديثة</div>
+          <div class="feature-desc">نشر حديث لمنصة <span class="en">Moodle</span>، مُهيَّأ ومصمَّم بهوية إياك منذ اليوم الأول — جاهز للتشغيل الفعلي، لا نسخة تجريبية.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- كيف تعمل -->
+  <section class="section" id="how-it-works">
+    <div class="section-inner">
+      <div class="section-head fade-up">
+        <div class="section-eyebrow">كيف تعمل</div>
+        <h2 class="section-title">من التسجيل إلى <em>الشهادة</em></h2>
+        <p class="section-sub">نفس المسار لكل متعلّم، بأي من اللغتين.</p>
+      </div>
+      <div class="steps-row">
+        <div class="step fade-up">
+          <div class="step-num">01</div>
+          <div class="step-title">التسجيل</div>
+          <div class="step-desc">تصفّح البرامج وسجّل عبر الإنترنت، بالعربية أو الإنجليزية.</div>
+        </div>
+        <div class="step fade-up">
+          <div class="step-num">02</div>
+          <div class="step-title">التعلّم</div>
+          <div class="step-desc">حضور جلسات مباشرة أو إنجاز وحدات ذاتية الوتيرة، بدعم من مدرّبك.</div>
+        </div>
+        <div class="step fade-up">
+          <div class="step-num">03</div>
+          <div class="step-title">التطبيق</div>
+          <div class="step-desc">طبّق كل مفهوم عملياً، مع الذكاء الاصطناعي كشريك تدريب — لا كبديل عنك.</div>
+        </div>
+        <div class="step fade-up">
+          <div class="step-num">04</div>
+          <div class="step-title">الحصول على الشهادة</div>
+          <div class="step-desc">أكمل المسار واحصل على شهادة موثّقة مرتبطة بمهارات أثبتّها فعلياً.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- دعوة للعمل -->
+  <div class="cta-banner" id="contact">
+    <div class="cta-ring"></div>
+    <div class="cta-inner">
+      <h2 class="cta-title">ابدأ برنامجك الأول <em>هذا الشهر</em></h2>
+      <p class="cta-desc">الدفعة التجريبية تتشكّل الآن. سجّل في أحد المسارات، أو تواصل معنا للحديث عن إضافة دورتك الخاصة إلى المنصة.</p>
+      <a href="#" class="btn btn-gold">سجّل الآن</a>
+    </div>
+  </div>
+
+  <!-- التذييل -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a href="#top" class="nav-wordmark"><span>أكاديمية</span> إياك للتعلّم</a>
+          <p class="footer-brand-desc">تدريب بإشراف مدرّبين ومساعدة الذكاء الاصطناعي — ثنائي اللغة، معتمد بشهادات، ومبنيّ على منصة تعلّم حديثة.</p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">البرامج</div>
+          <a href="#programs">هندسة البرمجيات بالذكاء الاصطناعي</a>
+          <a href="#programs">الذكاء الاصطناعي لرواد الأعمال</a>
+          <a href="#programs">القائمة الكاملة (قريباً)</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">المنصة</div>
+          <a href="#how-it-works">كيف تعمل</a>
+          <a href="#why">للمدرّبين</a>
+          <a href="#why">للإداريين</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">الأكاديمية</div>
+          <a href="#contact">تواصل معنا</a>
+          <a href="#contact">سجّل الآن</a>
+          <a href="#contact">تسجيل الدخول</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 أكاديمية إياك للتعلّم</div>
+        <div>تصميم مفهومي من <a href="https://veraxity.dev/founder" target="_blank">Veraxity</a> — <a href="moodle-proposal-ar.html">عرض المقترح الكامل</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- زر العودة للأعلى -->
+  <button class="scroll-top" id="scrollTop" aria-label="العودة إلى الأعلى">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navMobilePanel');
+    navToggle.addEventListener('click', function () {
+      navPanel.classList.toggle('open');
+    });
+    navPanel.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { navPanel.classList.remove('open'); });
+    });
+
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    fadeEls.forEach(function (el) { observer.observe(el); });
+
+    const scrollTopBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', function () {
+      scrollTopBtn.classList.toggle('visible', window.scrollY > 480);
+    });
+    scrollTopBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
