@@ -75,6 +75,37 @@ html .navbar.fixed-top {
     }
 }
 
+// Hides links to admin areas this site doesn't use: the AI subsystem (no
+// AI providers configured) and tool_mobile's paid app-branding upsell
+// ("Moodle app subscription — Upgrade your plan", "Premium features"). No
+// core API removes admin tree nodes from a theme (that's a local plugin's
+// job, via its own admin/settings.php hooks — more than this warrants), so
+// this hides them by the exact hrefs core registers for each (see
+// admin/settings/ai.php and admin/tool/mobile/settings.php for where each
+// page/category gets added, and admin/category.php / admin/search.php for
+// how they end up linked: a bare `<h3><a>` heading on the category browse
+// page, or `<li><a>`/`<h4><a>` in the search page's tabbed overview).
+// Hiding the closest of those three containers removes each link cleanly
+// with no empty bullet/spacing left behind, on whichever page it's on.
+$veraxity-hidden-admin-links: (
+    'category.php?category=ai',
+    'settings.php?section=aiprovider',
+    'settings.php?section=aiplacement',
+    'category.php?category=mobileapp',
+    'tool/mobile/subscription.php',
+    'settings.php?section=premiumfeatures'
+);
+
+body.pagelayout-admin {
+    @each $href in $veraxity-hidden-admin-links {
+        h3:has(> a[href*="#{$href}"]),
+        h4:has(> a[href*="#{$href}"]),
+        li:has(> a[href*="#{$href}"]) {
+            display: none !important;
+        }
+    }
+}
+
 // mform's "required field" marker (a small icon next to the label, plus a
 // "this field is required" legend at the bottom of every form) uses
 // Bootstrap's .text-danger — the same red as a real validation error — so
