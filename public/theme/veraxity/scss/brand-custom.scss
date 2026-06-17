@@ -75,6 +75,22 @@ html .navbar.fixed-top {
     }
 }
 
+// mform's "required field" marker (a small icon next to the label, plus a
+// "this field is required" legend at the bottom of every form) uses
+// Bootstrap's .text-danger — the same red as a real validation error — so
+// an untouched required field on a freshly-loaded page (signup, login,
+// any course/profile/activity settings form) reads as an error firing
+// unprovoked. It's purely informational, never an actual error state, so
+// give it the brand's amber instead of alarm red. Scoped to the marker's
+// own containers (not a blanket .text-danger override) so genuine error
+// text elsewhere keeps its red. Bootstrap's text-color utilities carry
+// !important, so only !important here can outrank that.
+.form-label-addon .text-danger,
+.fdescription.required,
+.fdescription.required .text-danger {
+    color: $secondary !important;
+}
+
 // Bilingual font stack shared by the landing page and the branded navbar
 // wordmark below: English pairs a serif (headings) with Inter (body) and
 // DM Mono (small uppercase chrome labels); Arabic swaps in Amiri (headings)
@@ -102,6 +118,32 @@ $lp-font-mono:      'DM Mono', monospace;
 html[dir="rtl"] .veraxity-navbar-brand {
     font-family: $lp-font-serif-rtl;
     font-weight: 700;
+}
+
+// ── Site-wide Arabic typography ─────────────────────────────────────────
+// Boost/Bootstrap's own font variables ($font-family-base/$headings-font-
+// family in brand-variables.scss) are DM Mono / Cormorant Garamond — Latin-
+// only webfonts. Arabic text anywhere outside the landing page and course-
+// overview-card markup (which already opt into Cairo/Amiri individually)
+// was silently falling back to the browser's generic system Arabic font:
+// forums, the gradebook, admin settings, course content, all of it. Same
+// two fonts as the landing page, just applied site-wide instead of scoped
+// to .veraxity-lp-*/.cov-*. More specific selectors elsewhere (.cov-title,
+// .veraxity-lp-hero__title, etc.) already set the same fonts explicitly and
+// continue to win on specificity, so this only fills in everything else.
+html[dir="rtl"] body {
+    font-family: $lp-font-sans-rtl;
+}
+
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] h5,
+html[dir="rtl"] h6 {
+    font-family: $lp-font-serif-rtl;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 // ── Landing page (academy-portal-concept mockup) ────────────────────────────
