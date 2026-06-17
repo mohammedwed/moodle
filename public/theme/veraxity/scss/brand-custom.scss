@@ -1006,3 +1006,125 @@ html[dir="rtl"] .veraxity-lp-footer-extra {
     &:hover { background: $body-color; border-color: rgba($secondary, .7); }
     svg { width: 18px; height: 18px; }
 }
+
+// ── Course enrolment overview page (enrol/index.php) ───────────────────────
+// Restyles core's existing course_info_box()/coursebox + enrol-widget card
+// markup in place — no template overrides, so this keeps working across
+// core upgrades. Scoped to body.path-enrol (set by Moodle for this script)
+// since .coursebox/.card are reused by the catalog and dashboard, which
+// must stay untouched.
+body.path-enrol {
+    #region-main [role="main"] > h2:first-of-type {
+        font-family: $lp-font-mono;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: $secondary;
+        margin-bottom: 1rem;
+    }
+
+    .coursebox {
+        max-width: 44rem;
+        margin: 0 auto 1.5rem;
+        background: $white;
+        border: 1px solid $border-color;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 16px 36px rgba($body-color, .06);
+
+        .info {
+            padding: 1.75rem 1.75rem 0;
+
+            .coursename a {
+                font-family: $lp-font-serif;
+                font-size: 26px;
+                font-weight: 600;
+                color: $body-color;
+                text-decoration: none;
+            }
+        }
+
+        .content {
+            padding: 0 1.75rem 1.75rem;
+
+            // Core's d-flex puts the course image beside the text; stacking
+            // it instead turns the existing image into a real banner.
+            .d-flex { flex-direction: column; }
+        }
+
+        .courseimage {
+            margin: 0 -1.75rem 1.5rem;
+
+            img {
+                width: 100%;
+                max-height: 20rem;
+                object-fit: cover;
+                display: block;
+            }
+        }
+
+        .summary {
+            font-family: $lp-font-sans;
+            font-size: 15px;
+            color: $veraxity-charcoal-light;
+            line-height: 1.7;
+        }
+
+        .teachers {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
+            font-family: $lp-font-sans;
+            font-size: 13px;
+            color: $veraxity-charcoal-light;
+
+            a { color: $secondary; }
+        }
+    }
+
+    .enrol-instance .card {
+        max-width: 44rem;
+        margin: 0 auto;
+        border: 1px solid $border-color;
+        border-radius: 12px;
+
+        .card-header {
+            background: $veraxity-card-bg;
+            border-bottom: 1px solid $border-color;
+            font-family: $lp-font-serif;
+        }
+
+        .btn-primary {
+            background: $primary;
+            border-color: $primary;
+            color: $body-color;
+            font-weight: 600;
+
+            &:hover { background: $secondary; border-color: $secondary; }
+        }
+    }
+}
+
+html[dir="rtl"] body.path-enrol {
+    #region-main [role="main"] > h2:first-of-type {
+        font-family: $lp-font-sans-rtl;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: none;
+    }
+
+    .coursebox {
+        .info .coursename a { font-family: $lp-font-serif-rtl; font-weight: 700; }
+        .summary, .teachers { font-family: $lp-font-sans-rtl; }
+    }
+
+    .enrol-instance .card .card-header { font-family: $lp-font-serif-rtl; font-weight: 700; }
+}
+
+@media (max-width: 47.5rem) {
+    body.path-enrol .coursebox {
+        .info { padding: 1.25rem 1.25rem 0; }
+        .content { padding: 0 1.25rem 1.25rem; }
+        .courseimage { margin: 0 -1.25rem 1.25rem; img { max-height: 12rem; } }
+    }
+}
