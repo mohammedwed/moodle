@@ -1,0 +1,155 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_veraxity/visitorcourse
+
+    Same marketing-style nav + footer chrome as the front page
+    (theme_veraxity/frontpage), reused on course/info.php for anonymous
+    visitors only — see theme/veraxity/layout/incourse.php. The nav/footer
+    section links point back at the front page (homeurl + anchor) since
+    those sections don't exist on this page itself.
+
+    Example context (json):
+    {
+        "output": {
+            "doctype": "<!DOCTYPE html>",
+            "page_title": "Digital Marketing Fundamentals",
+            "favicon": "favicon.ico",
+            "main_content": "<div class=\"cov-card\">Course summary</div>"
+        },
+        "navwordmark": "Veraxity <span>Academy</span>",
+        "loginlabel": "Log in",
+        "loginurl": "https://example.com/login/index.php",
+        "enrollurl": "https://example.com/login/signup.php",
+        "courseindexurl": "https://example.com/course/index.php",
+        "homeurl": "https://example.com/",
+        "footercopyright": "© 2026 Veraxity Academy"
+    }
+}}
+{{> theme_boost/head }}
+
+<body {{{ bodyattributes }}}>
+{{> core/local/toast/wrapper}}
+{{{ output.standard_top_of_body_html }}}
+
+<div class="veraxity-lp-page-wrapper">
+
+<nav class="veraxity-lp-nav">
+    <a href="{{{ homeurl }}}" class="veraxity-lp-nav__wordmark">{{{ navwordmark }}}</a>
+    <div class="veraxity-lp-nav__links">
+        <a href="{{{ homeurl }}}#programs">{{#str}} navprograms, theme_veraxity {{/str}}</a>
+        <a href="{{{ homeurl }}}#how-it-works">{{#str}} navhowitworks, theme_veraxity {{/str}}</a>
+        <a href="{{{ homeurl }}}#why">{{#str}} navplatform, theme_veraxity {{/str}}</a>
+        <a href="{{{ homeurl }}}#contact">{{#str}} navcontact, theme_veraxity {{/str}}</a>
+    </div>
+    <div class="veraxity-lp-nav__actions">
+        <a href="{{{ loginurl }}}" class="veraxity-lp-btn veraxity-lp-btn--ghost">{{{ loginlabel }}}</a>
+        <a href="{{{ enrollurl }}}" class="veraxity-lp-btn veraxity-lp-btn--gold">{{#str}} navenroll, theme_veraxity {{/str}}</a>
+    </div>
+    <button class="veraxity-lp-nav__toggle" id="veraxityLpNavToggle" aria-label="{{#str}} togglemenu, theme_veraxity {{/str}}">
+        <span></span><span></span><span></span>
+    </button>
+    <div class="veraxity-lp-nav__mobile-panel" id="veraxityLpNavMobilePanel">
+        <a href="{{{ homeurl }}}#programs">{{#str}} navprograms, theme_veraxity {{/str}}</a>
+        <a href="{{{ homeurl }}}#how-it-works">{{#str}} navhowitworks, theme_veraxity {{/str}}</a>
+        <a href="{{{ homeurl }}}#why">{{#str}} navplatform, theme_veraxity {{/str}}</a>
+        <a href="{{{ homeurl }}}#contact">{{#str}} navcontact, theme_veraxity {{/str}}</a>
+        <div class="veraxity-lp-nav__actions">
+            <a href="{{{ loginurl }}}" class="veraxity-lp-btn veraxity-lp-btn--ghost">{{{ loginlabel }}}</a>
+            <a href="{{{ enrollurl }}}" class="veraxity-lp-btn veraxity-lp-btn--gold">{{#str}} navenroll, theme_veraxity {{/str}}</a>
+        </div>
+    </div>
+</nav>
+
+<div class="veraxity-visitor-main">
+{{{ output.main_content }}}
+</div>
+
+<footer class="veraxity-lp-footer">
+    <div class="veraxity-lp-footer__inner">
+        <div class="veraxity-lp-footer__grid">
+            <div class="veraxity-lp-footer__col">
+                <a href="{{{ homeurl }}}" class="veraxity-lp-nav__wordmark">{{{ navwordmark }}}</a>
+                <p class="veraxity-lp-footer__brand-desc">{{#str}} footerbranddesc, theme_veraxity {{/str}}</p>
+            </div>
+            <div class="veraxity-lp-footer__col">
+                <div class="veraxity-lp-footer__col-title">{{#str}} footercolprograms, theme_veraxity {{/str}}</div>
+                <a href="{{{ homeurl }}}#programs">{{#str}} herobrowseprograms, theme_veraxity {{/str}}</a>
+                <a href="{{{ courseindexurl }}}">{{#str}} programviewall, theme_veraxity {{/str}}</a>
+            </div>
+            <div class="veraxity-lp-footer__col">
+                <div class="veraxity-lp-footer__col-title">{{#str}} footercolplatform, theme_veraxity {{/str}}</div>
+                <a href="{{{ homeurl }}}#how-it-works">{{#str}} navhowitworks, theme_veraxity {{/str}}</a>
+                <a href="{{{ homeurl }}}#why">{{#str}} footerforinstructors, theme_veraxity {{/str}}</a>
+                <a href="{{{ homeurl }}}#why">{{#str}} footerforadmins, theme_veraxity {{/str}}</a>
+            </div>
+            <div class="veraxity-lp-footer__col">
+                <div class="veraxity-lp-footer__col-title">{{#str}} footercolacademy, theme_veraxity {{/str}}</div>
+                <a href="{{{ homeurl }}}#contact">{{#str}} navcontact, theme_veraxity {{/str}}</a>
+                <a href="{{{ enrollurl }}}">{{#str}} navenroll, theme_veraxity {{/str}}</a>
+                <a href="{{{ loginurl }}}">{{{ loginlabel }}}</a>
+            </div>
+        </div>
+        <div class="veraxity-lp-footer__bottom">
+            <div>{{{ footercopyright }}}</div>
+        </div>
+    </div>
+</footer>
+
+<button class="veraxity-lp-scrolltop" id="veraxityLpScrollTop" aria-label="{{#str}} scrolltotop, theme_veraxity {{/str}}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+{{!
+    standard_footer_html() carries real plugin-injected links (data privacy
+    retention summary, mobile app download) via the
+    before_standard_footer_html_generation hook — kept, not stripped, but
+    wrapped so it reads as part of the dark footer instead of an unstyled
+    white strip tacked on after it.
+}}
+<div class="veraxity-lp-footer-extra">
+{{{ output.standard_footer_html }}}
+</div>
+{{{ output.standard_end_of_body_html }}}
+</div>
+
+</body>
+</html>
+{{#js}}
+require(['jquery'], function($) {
+    var navToggle = document.getElementById('veraxityLpNavToggle');
+    var navPanel = document.getElementById('veraxityLpNavMobilePanel');
+    if (navToggle && navPanel) {
+        navToggle.addEventListener('click', function () {
+            navPanel.classList.toggle('open');
+        });
+        navPanel.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () { navPanel.classList.remove('open'); });
+        });
+    }
+
+    var scrollTopBtn = document.getElementById('veraxityLpScrollTop');
+    if (scrollTopBtn) {
+        window.addEventListener('scroll', function () {
+            scrollTopBtn.classList.toggle('visible', window.scrollY > 480);
+        });
+        scrollTopBtn.addEventListener('click', function () {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+    }
+});
+{{/js}}

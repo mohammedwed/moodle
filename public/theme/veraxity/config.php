@@ -30,13 +30,20 @@ $THEME->sheets = [];
 $THEME->editor_sheets = [];
 $THEME->usefallback = true;
 
-// Custom marketing-style nav/footer chrome, used only on the front page —
-// everywhere else keeps Boost's standard drawers layout unchanged.
+// Custom marketing-style nav/footer chrome, used on the front page always,
+// and on the 'incourse' layout only for never-logged-in visitors (see
+// layout/incourse.php) — everywhere else keeps Boost's standard drawers
+// layout unchanged.
 $THEME->layouts = [
     'frontpage' => [
         'file' => 'frontpage.php',
         'regions' => [],
         'options' => ['nonavbar' => true],
+    ],
+    'incourse' => [
+        'file' => 'incourse.php',
+        'regions' => ['side-pre'],
+        'defaultregion' => 'side-pre',
     ],
 ];
 

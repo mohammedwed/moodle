@@ -160,7 +160,13 @@ class course_renderer extends \core_course_renderer {
             $course = new \core_course_list_element($course);
         }
 
-        $url = (new \moodle_url('/course/view.php', ['id' => $course->id]))->out();
+        // Anonymous visitors hit a login wall on course/view.php (core's
+        // require_login() there has no "just show me what this course is"
+        // exception) — send them to course/info.php instead, the one course
+        // page core lets a never-logged-in user actually view. Logged-in
+        // users go straight to the real course view, same as before.
+        $infopage = !isloggedin() ? '/course/info.php' : '/course/view.php';
+        $url = (new \moodle_url($infopage, ['id' => $course->id]))->out();
         $name = format_string($course->fullname, true, ['context' => \context_course::instance($course->id)]);
 
         $summary = '';

@@ -42,11 +42,27 @@ html body.pagelayout-login #page .login-layout-left::after {
 // own nav entirely (see .veraxity-lp-nav below) and never renders this one.
 html .navbar.fixed-top {
     background-color: $body-color !important;
-    border-bottom: 1px solid $secondary;
+    // Same understated hairline as .veraxity-lp-nav, not a bold gold accent —
+    // this bar should read as the same chrome, not a competing design.
+    border-bottom: 1px solid rgba($veraxity-card-bg, .06);
 
-    .navbar-brand,
-    .nav-link {
+    // Bootstrap's default toggler icon strokes in $body-color, which is
+    // now also this bar's background — invisible on mobile/narrow viewports
+    // where the toggler is the only way to open the course index drawer.
+    .navbar-toggler-icon {
+        background-image: escape-svg(
+            url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$veraxity-card-bg}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>")
+        );
+    }
+
+    .navbar-brand {
         color: $veraxity-card-bg;
+    }
+
+    // Slightly muted, matching .veraxity-lp-nav__links — the active-tab
+    // underline (Boost's .nav-tabs styling below) carries full contrast.
+    .nav-link {
+        color: rgba($veraxity-card-bg, .7);
     }
 
     .nav-link:hover,
@@ -76,7 +92,7 @@ $lp-font-mono:      'DM Mono', monospace;
 // as the landing page nav, everywhere else in the site.
 .veraxity-navbar-brand {
     font-family: $lp-font-serif;
-    font-size: 19px;
+    font-size: 22px; // matches .veraxity-lp-nav__wordmark on the landing page.
     font-weight: 600;
     letter-spacing: -0.01em;
 
@@ -91,7 +107,9 @@ html[dir="rtl"] .veraxity-navbar-brand {
 // ── Landing page (academy-portal-concept mockup) ────────────────────────────
 // Everything below is scoped to elements built by course_renderer::frontpage()
 // and theme/veraxity/layout/frontpage.php, all under the veraxity-lp- prefix
-// so it can't leak onto any other page.
+// so it can't leak onto any other page. The same nav/footer markup is also
+// reused as-is by theme/veraxity/layout/incourse.php (course/info.php, for
+// never-logged-in visitors only) — these rules apply there too.
 
 .veraxity-lp-en {
     font-family: $lp-font-mono;
@@ -1305,4 +1323,15 @@ html[dir="rtl"] {
     .cov-aside {
         flex-direction: column;
     }
+}
+
+// ── Visitor-facing course info page (course/info.php, anonymous only) ─────
+// theme/veraxity/templates/visitorcourse.mustache wraps the role="main"
+// region (just the .cov-card from course_info_box(), nothing else) in this
+// container so it gets breathing room instead of butting straight against
+// the sticky nav and the footer.
+.veraxity-visitor-main {
+    max-width: 75rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
 }
