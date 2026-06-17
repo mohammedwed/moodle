@@ -113,3 +113,7 @@ $string['footerforadmins'] = 'For Admins';
 $string['footercopyright'] = '© {$a} Veraxity Academy';
 
 $string['scrolltotop'] = 'Scroll to top';
+
+// Course structure card (enrol/index.php, course/info.php).
+$string['coursestructure'] = 'Course Structure';
+$string['coursestructuremore'] = '+ {$a} more';

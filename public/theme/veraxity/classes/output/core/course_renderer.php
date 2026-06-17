@@ -303,4 +303,73 @@ class course_renderer extends \core_course_renderer {
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' . $strokewidth . '" ' .
             'aria-hidden="true">' . $innermarkup . '</svg>';
     }
+
+    /**
+     * Adds a "Course Structure" card after the existing course info box —
+     * shown on enrol/index.php (and course/info.php) for visitors who
+     * aren't enrolled yet. Lists section *names* only (the syllabus
+     * outline), never activity/resource content, so it works as a public
+     * preview without leaking anything access-gated.
+     */
+    public function course_info_box(\stdClass $course) {
+        return parent::course_info_box($course) . $this->veraxity_course_structure($course);
+    }
+
+    /**
+     * Maximum syllabus entries to list — a defensive cap, not expected to
+     * matter for normally-authored courses.
+     */
+    private const STRUCTURE_MAX_ITEMS = 12;
+
+    protected function veraxity_course_structure(\stdClass $course): string {
+        global $DB;
+
+        $sections = $DB->get_records('course_sections', ['course' => $course->id, 'visible' => 1], 'section ASC');
+
+        // Only sections the course creator bothered to name represent real
+        // advertised structure — unnamed filler sections (e.g. bulk-created
+        // demo content) would otherwise show as a long run of "Topic N".
+        $named = array_values(array_filter($sections, fn ($section) => !empty($section->name)));
+
+        if (empty($named)) {
+            return '';
+        }
+
+        $totalcount = count($named);
+        $shown = array_slice($named, 0, self::STRUCTURE_MAX_ITEMS);
+
+        $items = '';
+        $i = 0;
+        foreach ($shown as $section) {
+            $i++;
+            $name = format_string(get_section_name($course, $section));
+
+            $summary = '';
+            if (!empty(trim(strip_tags($section->summary)))) {
+                $formatted = format_text($section->summary, $section->summaryformat, ['context' => \context_course::instance($course->id)]);
+                $summary = shorten_text(trim(strip_tags($formatted)), 100);
+            }
+
+            $items .= '
+        <div class="veraxity-structure__item">
+            <span class="veraxity-structure__num">' . str_pad((string) $i, 2, '0', STR_PAD_LEFT) . '</span>
+            <div class="veraxity-structure__body">
+                <div class="veraxity-structure__name">' . $name . '</div>' .
+                ($summary !== '' ? '<div class="veraxity-structure__desc">' . $summary . '</div>' : '') . '
+            </div>
+        </div>';
+        }
+
+        $more = '';
+        if ($totalcount > count($shown)) {
+            $more = '<div class="veraxity-structure__more">' .
+                get_string('coursestructuremore', 'theme_veraxity', $totalcount - count($shown)) . '</div>';
+        }
+
+        return '
+<div class="veraxity-structure box generalbox">
+    <h3 class="veraxity-structure__heading">' . get_string('coursestructure', 'theme_veraxity') . '</h3>
+    <div class="veraxity-structure__list">' . $items . '</div>' . $more . '
+</div>';
+    }
 }

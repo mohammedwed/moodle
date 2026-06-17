@@ -1128,3 +1128,90 @@ html[dir="rtl"] body.path-enrol {
         .courseimage { margin: 0 -1.25rem 1.25rem; img { max-height: 12rem; } }
     }
 }
+
+// ── Course structure card ───────────────────────────────────────────────
+// Appended by theme_veraxity\output\core\course_renderer::course_info_box()
+// after the existing info card on enrol/index.php and course/info.php —
+// not scoped to body.path-enrol since it should render on both.
+.veraxity-structure {
+    max-width: 44rem;
+    margin: 0 auto 1.5rem;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 16px 36px rgba($body-color, .06);
+
+    &__heading {
+        font-family: $lp-font-mono;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: $secondary;
+        margin-bottom: 1.25rem;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid $border-color;
+
+        &:last-child { padding-bottom: 0; border-bottom: none; }
+    }
+
+    &__num {
+        flex: 0 0 auto;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: $body-color;
+        color: $primary;
+        font-family: $lp-font-mono;
+        font-size: 11px;
+        direction: ltr;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__name {
+        font-family: $lp-font-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: $body-color;
+        margin-bottom: 4px;
+    }
+
+    &__desc {
+        font-family: $lp-font-sans;
+        font-size: 13px;
+        color: $veraxity-charcoal-light;
+        line-height: 1.6;
+    }
+
+    &__more {
+        font-family: $lp-font-sans;
+        font-size: 12px;
+        color: $veraxity-charcoal-light;
+        margin-top: 1rem;
+        text-align: center;
+    }
+}
+
+html[dir="rtl"] .veraxity-structure {
+    &__heading { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
+    &__name { font-family: $lp-font-serif-rtl; font-weight: 700; }
+    &__desc, &__more { font-family: $lp-font-sans-rtl; }
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-structure { padding: 1.25rem; }
+}

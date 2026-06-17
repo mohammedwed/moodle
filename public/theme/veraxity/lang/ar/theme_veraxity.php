@@ -112,3 +112,7 @@ $string['footerforadmins'] = 'للإداريين';
 $string['footercopyright'] = '© {$a} أكاديمية فيراكستي';
 
 $string['scrolltotop'] = 'العودة إلى الأعلى';
+
+// Course structure card (enrol/index.php, course/info.php).
+$string['coursestructure'] = 'هيكل المقرر';
+$string['coursestructuremore'] = '+ {$a} أخرى';
