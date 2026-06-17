@@ -108,8 +108,8 @@ html[dir="rtl"] .veraxity-navbar-brand {
 // Everything below is scoped to elements built by course_renderer::frontpage()
 // and theme/veraxity/layout/frontpage.php, all under the veraxity-lp- prefix
 // so it can't leak onto any other page. The same nav/footer markup is also
-// reused as-is by theme/veraxity/layout/incourse.php (course/info.php, for
-// never-logged-in visitors only) — these rules apply there too.
+// reused as-is by theme/veraxity/layout/coursedetails.php (the standalone
+// visitor course-details page) — these rules apply there too.
 
 .veraxity-lp-en {
     font-family: $lp-font-mono;
@@ -1095,58 +1095,53 @@ html[dir="rtl"] body.path-enrol {
 }
 
 // ── Course overview card ────────────────────────────────────────────────
-// Built by theme_veraxity\output\core\course_renderer::course_info_box(),
-// matching the course-overview-component mockup. Not scoped to
-// body.path-enrol since it also renders on course/info.php.
-.cov-card {
+// Built by theme_veraxity\output\course_overview_card, matching mockups/
+// course-overview-component.html (and -ar.html). Used both by
+// course_info_box() (enrol/index.php, course/info.php) and directly by
+// theme/veraxity/coursedetails.php — not scoped to either page.
+.cov-embed {
+    // container-type lives on this outer wrapper rather than .cov-row
+    // itself — a @container query can't restyle the element that defines
+    // the container (self-referencing queries are ignored per spec), so
+    // the row/card/boxes have to be descendants of the container, not it.
     container-type: inline-size;
-    max-width: 65rem; // 1040px — mockup's 880px widened ~2 grid columns, still well short of full bleed.
+    max-width: 56.25rem; // 900px, matching the mockup.
     margin: 0 auto 1.5rem;
+    font-family: $lp-font-sans;
+    color: $body-color;
+}
+
+.cov-row {
+    display: grid;
+    grid-template-columns: minmax(15rem, 20rem) 1fr;
+    align-items: start;
+    gap: 1.25rem;
+}
+
+.cov-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.cov-card,
+.cov-objectives-box,
+.cov-structure-box {
+    min-width: 0;
     background: $white;
     border: 1px solid $border-color;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 16px 36px rgba($body-color, .06);
-    font-family: $lp-font-sans;
-    color: $body-color;
+    box-shadow: 0 10px 30px rgba($body-color, .08);
 }
 
-// Puts the objectives/structure boxes beside the card instead of below it.
-// Only rendered when there's at least one box to show — otherwise the lone
-// .cov-card above centers itself via its own max-width/margin.
-.cov-layout {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    max-width: 75rem;
-    margin: 0 auto 1.5rem;
-
-    .cov-card {
-        max-width: none;
-        margin: 0;
-        flex: 1 1 42rem;
-        min-width: 0;
-    }
-}
-
-.cov-aside {
-    display: flex;
-    gap: 1.25rem;
-    flex: 1 1 30rem;
-    min-width: 0;
-}
-
-.cov-aside-box {
-    container-type: inline-size;
-    flex: 1 1 50%;
-    min-width: 0;
-    background: $white;
-    border: 1px solid $border-color;
-    border-radius: 16px;
-    padding: 20px 22px;
-    box-shadow: 0 16px 36px rgba($body-color, .06);
-    font-family: $lp-font-sans;
-    color: $body-color;
+// A lone card with nothing to show beside it (no objectives or structure —
+// course_overview_card::render() skips .cov-row entirely in that case)
+// gets to be wider than the narrow grid column it'd otherwise be confined to.
+.cov-embed > .cov-card {
+    max-width: 28rem;
+    margin: 0 auto;
 }
 
 .cov-media {
@@ -1158,40 +1153,37 @@ html[dir="rtl"] body.path-enrol {
     img { width: 100%; height: 100%; object-fit: cover; display: block; }
 }
 
-.cov-info { padding: 1.5rem 1.75rem; }
+.cov-info { padding: 1.25rem 1.375rem 0.25rem; }
 
 .cov-title {
     font-family: $lp-font-serif;
     font-weight: 600;
-    font-size: 27px;
-    line-height: 1.15;
+    font-size: 22px;
+    line-height: 1.2;
     color: $body-color;
     margin-bottom: 8px;
 }
 
 .cov-subtitle {
-    font-size: 13px;
+    font-size: 12.5px;
     color: $veraxity-charcoal-light;
     line-height: 1.6;
-    margin-bottom: 18px;
+    margin-bottom: 1rem;
 }
 
 .cov-meta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1.25rem 1.75rem;
-    margin-top: 18px;
-    padding-top: 14px;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.875rem;
+    margin-top: 0.25rem;
     border-top: 1px solid $border-color;
 }
 
-.cov-meta-item {
+.cov-meta-row {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    // A minimum but no grow: items stay compact and sit together at the
-    // row's start instead of stretching apart across a full-width card.
-    flex: 0 1 9rem;
+    align-items: flex-start;
+    gap: 0.625rem;
 }
 
 .cov-meta-icon {
@@ -1201,6 +1193,7 @@ html[dir="rtl"] body.path-enrol {
     align-items: center;
     justify-content: center;
     color: $secondary;
+    flex-shrink: 0;
 
     svg { width: 15px; height: 15px; }
 }
@@ -1208,12 +1201,30 @@ html[dir="rtl"] body.path-enrol {
 .cov-meta-label {
     font-family: $lp-font-mono;
     font-size: 8.5px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: $veraxity-charcoal-light;
+    margin-bottom: 3px;
 }
 
-.cov-meta-value { font-size: 12px; font-weight: 600; color: $body-color; line-height: 1.3; }
+.cov-meta-value { font-size: 12.5px; font-weight: 600; color: $body-color; line-height: 1.3; }
+
+.cov-cta { padding: 1.125rem 1.375rem 1.375rem; }
+
+.cov-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.cov-btn-gold { color: $body-color; background: $primary; border: 1px solid transparent; }
 
 .cov-section-label {
     font-family: $lp-font-mono;
@@ -1221,16 +1232,20 @@ html[dir="rtl"] body.path-enrol {
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: $secondary;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
+
+.cov-objectives-box { padding: 1.375rem 1.5rem; }
 
 .cov-objectives {
     font-size: 13.5px;
     color: $veraxity-charcoal-light;
-    line-height: 1.75;
+    line-height: 1.8;
 }
 
-.cov-structure { padding: 18px 0 4px; list-style: none; }
+.cov-structure-box { padding: 1.375rem 1.5rem; }
+
+.cov-structure { list-style: none; }
 
 .cov-structure-item {
     display: flex;
@@ -1238,6 +1253,9 @@ html[dir="rtl"] body.path-enrol {
     flex-wrap: wrap;
     gap: 6px 12px;
     padding: 9px 0;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child { border-bottom: none; }
 }
 
 .cov-structure-num {
@@ -1255,81 +1273,47 @@ html[dir="rtl"] body.path-enrol {
 .cov-structure-more {
     font-size: 12px;
     color: $veraxity-charcoal-light;
-    padding: 8px 0 16px;
-    border-top: 1px dashed $border-color;
-    margin-top: 4px;
+    padding: 8px 0 4px;
 }
-
-.cov-footer {
-    background: $veraxity-card-bg;
-    border-top: 1px solid $border-color;
-    padding: 16px 1.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.cov-btn {
-    display: inline-flex;
-    align-items: center;
-    font-size: 12.5px;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 9px 18px;
-    border-radius: 9999px;
-    white-space: nowrap;
-}
-
-.cov-btn-gold { color: $body-color; background: $primary; border: 1px solid transparent; }
 
 html[dir="rtl"] {
-    .cov-card { font-family: $lp-font-sans-rtl; }
-    .cov-title { font-family: $lp-font-serif-rtl; font-weight: 700; line-height: 1.3; }
+    .cov-embed { font-family: $lp-font-sans-rtl; }
+    .cov-title { font-family: $lp-font-serif-rtl; font-weight: 700; line-height: 1.35; }
     .cov-subtitle { font-family: $lp-font-sans-rtl; }
     .cov-meta-label { font-family: $lp-font-sans-rtl; font-weight: 600; letter-spacing: 0.02em; text-transform: none; }
     .cov-meta-value { font-family: $lp-font-sans-rtl; }
     .cov-section-label { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
     .cov-objectives { font-family: $lp-font-sans-rtl; }
     .cov-structure-title, .cov-structure-desc, .cov-structure-more { font-family: $lp-font-sans-rtl; }
-    .cov-aside-box { font-family: $lp-font-sans-rtl; }
+    .cov-objectives-box, .cov-structure-box { font-family: $lp-font-sans-rtl; }
 }
 
-// Adapts to the card's own (or aside box's own) rendered width, not the
-// viewport — same look whether full-width or embedded in a narrow column.
+// Adapts to the embed's own rendered width, not the viewport — same look
+// whether full-width or sitting in a narrower column of a host template.
+@container (max-width: 640px) {
+    .cov-row { grid-template-columns: 1fr; }
+}
+
 @container (max-width: 380px) {
-    .cov-title { font-size: 22px; }
+    .cov-title { font-size: 21px; }
     .cov-structure-desc { display: none; }
 }
 
-// Card and aside no longer fit comfortably side by side — stack the aside
-// below the card instead.
-@media (max-width: 64rem) {
-    .cov-layout {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .cov-aside {
-        flex-basis: auto;
-    }
-}
-
 @media (max-width: 47.5rem) {
-    .cov-info { padding: 1.25rem; }
-    .cov-aside-box { padding: 1.25rem; }
-    .cov-footer { padding: 14px 1.25rem; }
-
-    // Two narrow side-by-side boxes get cramped on phones — stack them too.
-    .cov-aside {
-        flex-direction: column;
+    .cov-info,
+    .cov-objectives-box,
+    .cov-structure-box {
+        padding: 1.25rem;
     }
+
+    .cov-cta { padding: 0.875rem 1.25rem 1.25rem; }
 }
 
-// ── Visitor-facing course info page (course/info.php, anonymous only) ─────
+// ── Visitor course-details page (theme/veraxity/coursedetails.php) ────────
 // theme/veraxity/templates/visitorcourse.mustache wraps the role="main"
-// region (just the .cov-card from course_info_box(), nothing else) in this
-// container so it gets breathing room instead of butting straight against
-// the sticky nav and the footer.
+// region (just the .cov-embed card from course_overview_card, nothing
+// else) in this container so it gets breathing room instead of butting
+// straight against the sticky nav and the footer.
 .veraxity-visitor-main {
     max-width: 75rem;
     margin: 0 auto;

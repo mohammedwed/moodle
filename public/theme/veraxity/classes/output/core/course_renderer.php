@@ -162,11 +162,11 @@ class course_renderer extends \core_course_renderer {
 
         // Anonymous visitors hit a login wall on course/view.php (core's
         // require_login() there has no "just show me what this course is"
-        // exception) — send them to course/info.php instead, the one course
-        // page core lets a never-logged-in user actually view. Logged-in
-        // users go straight to the real course view, same as before.
-        $infopage = !isloggedin() ? '/course/info.php' : '/course/view.php';
-        $url = (new \moodle_url($infopage, ['id' => $course->id]))->out();
+        // exception) — send them to the standalone visitor course-details
+        // page instead. Logged-in users go straight to the real course view.
+        $url = !isloggedin()
+            ? (new \moodle_url('/theme/veraxity/coursedetails.php', ['id' => $course->id]))->out()
+            : (new \moodle_url('/course/view.php', ['id' => $course->id]))->out();
         $name = format_string($course->fullname, true, ['context' => \context_course::instance($course->id)]);
 
         $summary = '';
@@ -178,7 +178,7 @@ class course_renderer extends \core_course_renderer {
             $summary = get_string('programsnosummary', 'theme_veraxity');
         }
 
-        $imageurl = $this->veraxity_course_image_url($course);
+        $imageurl = \theme_veraxity\output\course_overview_card::image_url($course);
         $visual = $imageurl !== null
             ? '<div class="veraxity-lp-program__image"><img src="' . $imageurl . '" alt=""></div>'
             : '<div class="veraxity-lp-program__icon">' . $icon . '</div>';
@@ -191,30 +191,6 @@ class course_renderer extends \core_course_renderer {
                 <a href="' . $url . '" class="veraxity-lp-program__link">' .
                     get_string('programlink', 'theme_veraxity') . $arrow . '</a>
             </div>';
-    }
-
-    /**
-     * URL of the course's "Course summary files" image (Course Settings >
-     * Course image), the same field that already powers the catalog cards
-     * and the enrolment overview page — no plugin needed, just reused here.
-     * Returns null when the course has no image, so callers fall back to
-     * the generic icon.
-     */
-    protected function veraxity_course_image_url(\core_course_list_element $course): ?string {
-        global $CFG;
-
-        foreach ($course->get_course_overviewfiles() as $file) {
-            if ($file->is_valid_image()) {
-                return \moodle_url::make_file_url(
-                    "$CFG->wwwroot/pluginfile.php",
-                    '/' . $file->get_contextid() . '/' . $file->get_component() . '/' .
-                        $file->get_filearea() . $file->get_filepath() . $file->get_filename(),
-                    false
-                )->out();
-            }
-        }
-
-        return null;
     }
 
     protected function veraxity_quote(): string {
@@ -312,215 +288,17 @@ class course_renderer extends \core_course_renderer {
 
     /**
      * Replaces core's default course_info_box() (used on enrol/index.php
-     * and course/info.php for visitors who aren't enrolled yet) with the
-     * course-overview-component design: cover image, an instructor/
-     * duration/format/language meta row, learning objectives, and the
-     * course structure list — all in one card with an enrol CTA footer.
+     * and course/info.php for logged-in users who aren't enrolled yet)
+     * with the course-overview-component design — delegates to the plain
+     * theme_veraxity\output\course_overview_card class, which is also used
+     * directly by theme/veraxity/coursedetails.php (the standalone visitor
+     * page) without going through this renderer override.
      */
     public function course_info_box(\stdClass $course) {
         $listelement = ($course instanceof \core_course_list_element)
             ? $course
             : new \core_course_list_element($course);
 
-        return $this->veraxity_course_overview_card($listelement);
-    }
-
-    protected function veraxity_course_overview_card(\core_course_list_element $course): string {
-        $imageurl = $this->veraxity_course_image_url($course);
-        $media = $imageurl !== null
-            ? '<div class="cov-media"><img src="' . $imageurl . '" alt=""></div>'
-            : '';
-
-        $name = format_string($course->fullname, true, ['context' => \context_course::instance($course->id)]);
-
-        $subtitle = '';
-        if ($course->has_summary()) {
-            $chelper = new \coursecat_helper();
-            $formatted = $chelper->get_course_formatted_summary($course, ['noclean' => false, 'para' => false]);
-            $subtitle = shorten_text(trim(strip_tags($formatted)), 200);
-        }
-
-        $card = '
-<section class="cov-card">' .
-    $media . '
-    <div class="cov-info">
-        <h2 class="cov-title">' . $name . '</h2>' .
-        ($subtitle !== '' ? '<p class="cov-subtitle">' . $subtitle . '</p>' : '') .
-        $this->veraxity_course_meta($course) . '
-    </div>
-    <div class="cov-footer">
-        <a href="' . theme_veraxity_get_enroll_url() . '" class="cov-btn cov-btn-gold">' .
-            get_string('ctaenroll', 'theme_veraxity') . '</a>
-    </div>
-</section>';
-
-        $aside = $this->veraxity_course_aside($course);
-        if ($aside === '') {
-            // No objectives or structure to show — the card centers itself.
-            return $card;
-        }
-
-        return '<div class="cov-layout">' . $card . $aside . '</div>';
-    }
-
-    protected function veraxity_course_meta(\core_course_list_element $course): string {
-        $items = '';
-
-        $contacts = $course->get_course_contacts();
-        if (!empty($contacts)) {
-            $names = array_map(fn ($contact) => $contact['username'], $contacts);
-            $items .= $this->veraxity_meta_item(
-                '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
-                get_string('metainstructor', 'theme_veraxity'),
-                implode(', ', $names)
-            );
-        }
-
-        $duration = $this->veraxity_custom_field_value($course, 'duration');
-        if ($duration !== '') {
-            $items .= $this->veraxity_meta_item(
-                '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
-                get_string('metaduration', 'theme_veraxity'),
-                $duration
-            );
-        }
-
-        $format = $this->veraxity_custom_field_value($course, 'format');
-        if ($format !== '') {
-            $items .= $this->veraxity_meta_item(
-                '<path d="M4 19V6a2 2 0 0 1 2-2h13v15"/><path d="M4 19a2 2 0 0 0 2 2h13"/><path d="M9 7h7M9 11h7"/>',
-                get_string('metaformat', 'theme_veraxity'),
-                $format
-            );
-        }
-
-        $language = $this->veraxity_custom_field_value($course, 'courselanguage');
-        if ($language !== '') {
-            $items .= $this->veraxity_meta_item(
-                '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18Z"/>',
-                get_string('metalanguage', 'theme_veraxity'),
-                $language
-            );
-        }
-
-        if ($items === '') {
-            return '';
-        }
-
-        return '<div class="cov-meta">' . $items . '</div>';
-    }
-
-    protected function veraxity_meta_item(string $iconpath, string $label, string $value): string {
-        return '
-        <div class="cov-meta-item">
-            <div class="cov-meta-icon">' . $this->veraxity_icon($iconpath, '1.8') . '</div>
-            <div class="cov-meta-label">' . $label . '</div>
-            <div class="cov-meta-value">' . s($value) . '</div>
-        </div>';
-    }
-
-    /**
-     * Looks up a single custom course field's display value by shortname
-     * (e.g. "duration", "format", "courselanguage", "objectives") rather
-     * than core's generic field-by-field renderer, since each one needs to
-     * land in a specific spot in this design (the meta row or the body).
-     */
-    protected function veraxity_custom_field_value(\core_course_list_element $course, string $shortname): string {
-        foreach ($course->get_custom_fields() as $data) {
-            if ($data->get_field()->get('shortname') === $shortname) {
-                $value = $data->export_value();
-                return $value !== null ? trim((string) $value) : '';
-            }
-        }
-        return '';
-    }
-
-    /**
-     * Learning objectives and course structure as two standalone boxes
-     * beside the main card, rather than stacked inside its body — only
-     * includes whichever of the two actually has content.
-     */
-    protected function veraxity_course_aside(\core_course_list_element $course): string {
-        $boxes = '';
-
-        $objectives = $this->veraxity_custom_field_value($course, 'objectives');
-        if ($objectives !== '') {
-            // Already formatted HTML via the textarea field's export_value().
-            $boxes .= '
-    <div class="cov-aside-box">
-        <div class="cov-section-label">' . get_string('covobjectiveslabel', 'theme_veraxity') . '</div>
-        <p class="cov-objectives">' . $objectives . '</p>
-    </div>';
-        }
-
-        $structure = $this->veraxity_course_structure($course);
-        if ($structure !== '') {
-            $boxes .= '
-    <div class="cov-aside-box">' . $structure . '
-    </div>';
-        }
-
-        if ($boxes === '') {
-            return '';
-        }
-
-        return '
-    <div class="cov-aside">' . $boxes . '
-    </div>';
-    }
-
-    /**
-     * Maximum syllabus entries to list — a defensive cap, not expected to
-     * matter for normally-authored courses.
-     */
-    private const STRUCTURE_MAX_ITEMS = 12;
-
-    protected function veraxity_course_structure(\core_course_list_element $course): string {
-        global $DB;
-
-        $sections = $DB->get_records('course_sections', ['course' => $course->id, 'visible' => 1], 'section ASC');
-
-        // Only sections the course creator bothered to name represent real
-        // advertised structure — unnamed filler sections (e.g. bulk-created
-        // demo content) would otherwise show as a long run of "Topic N".
-        $named = array_values(array_filter($sections, fn ($section) => !empty($section->name)));
-
-        if (empty($named)) {
-            return '';
-        }
-
-        $totalcount = count($named);
-        $shown = array_slice($named, 0, self::STRUCTURE_MAX_ITEMS);
-
-        $items = '';
-        $i = 0;
-        foreach ($shown as $section) {
-            $i++;
-            $name = format_string(get_section_name($course, $section));
-
-            $summary = '';
-            if (!empty(trim(strip_tags($section->summary)))) {
-                $formatted = format_text($section->summary, $section->summaryformat, ['context' => \context_course::instance($course->id)]);
-                $summary = shorten_text(trim(strip_tags($formatted)), 100);
-            }
-
-            $items .= '
-            <li class="cov-structure-item">
-                <span class="cov-structure-num">' . str_pad((string) $i, 2, '0', STR_PAD_LEFT) . '</span>
-                <span class="cov-structure-title">' . $name . '</span>' .
-                ($summary !== '' ? '<span class="cov-structure-desc">— ' . $summary . '</span>' : '') . '
-            </li>';
-        }
-
-        $more = '';
-        if ($totalcount > count($shown)) {
-            $more = '<div class="cov-structure-more">' .
-                get_string('coursestructuremore', 'theme_veraxity', $totalcount - count($shown)) . '</div>';
-        }
-
-        return '
-        <div class="cov-section-label">' . get_string('coursestructure', 'theme_veraxity') . '</div>
-        <ol class="cov-structure">' . $items . '
-        </ol>' . $more;
+        return (new \theme_veraxity\output\course_overview_card($listelement))->render();
     }
 }

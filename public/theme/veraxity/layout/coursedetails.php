@@ -15,23 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Incourse layout override — of the pages using this layout, the only one a
- * never-logged-in visitor can actually reach is course/info.php (everything
- * else, including enrol/index.php, redirects anonymous users to login
- * before this layout ever runs). For that visitor-facing case, swap in the
- * same marketing nav + footer chrome as the front page; logged-in users
- * (including guest sessions, who are "logged in" too) keep Boost's normal
- * drawers layout untouched.
+ * Layout for theme/veraxity/coursedetails.php — the standalone, never-
+ * logged-in visitor course-details page. Same marketing nav + footer
+ * chrome as the front page (shared theme_veraxity/visitorcourse
+ * template). No login-state branching needed here: coursedetails.php
+ * redirects any logged-in session away before this layout ever runs.
  *
  * @package    theme_veraxity
  */
 
 defined('MOODLE_INTERNAL') || die();
-
-if (isloggedin()) {
-    require($CFG->dirroot . '/theme/boost/layout/drawers.php');
-    return;
-}
 
 $templatecontext = [
     'output' => $OUTPUT,
