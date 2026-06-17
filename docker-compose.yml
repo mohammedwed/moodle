@@ -27,6 +27,9 @@ services:
       # MOODLE_REDIS_HOST: redis  # uncomment after phpredis extension is compiled in
     volumes:
       - moodledata:/var/moodledata
+      # Theme source bind-mounted so theme edits show up after a cache purge
+      # instead of requiring a full image rebuild + container recreate.
+      - ./public/theme:/var/www/html/public/theme:ro
     depends_on:
       db:
         condition: service_healthy

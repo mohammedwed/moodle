@@ -61,3 +61,5 @@ jsconfig.json
 UPGRADING-CURRENT.md
 .phpunit.cache
 tsconfig.aliases.json
+# Reference theme clone (separate upstream git history, not vendored in).
+/public/theme/fordson/

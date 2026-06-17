@@ -1,0 +1,33 @@
+// Veraxity brand — Bootstrap/Boost variable overrides.
+// Colors and type pulled from veraxity.dev's compiled CSS design tokens.
+
+@import 'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@400;500&family=Tajawal:wght@400;500;700&display=swap';
+
+// Core palette.
+$primary:    #ef9f27; // accent / brand amber
+$secondary:  #ba7517; // deeper amber, used for hover/ring states
+$danger:     #be123c;
+
+$body-bg:           #fafaf8; // warm cream background
+$body-color:         #2c2c2a; // warm charcoal text
+$border-color:       #d3d1c7;
+$input-border-color: #d3d1c7;
+$veraxity-card-bg:   #f1efe8; // card surface, slightly darker than the page background
+$veraxity-content-maxwidth: 72rem; // front-page sections — wider than Boost's 830px reading-width default
+
+// Veraxity pairs an editorial serif for headings with a monospace body —
+// distinctive, but it does make dense admin screens heavier to read.
+// Drop the $font-family-base override below if that trade-off doesn't suit
+// the back-office areas.
+$font-family-sans-serif: "DM Mono", monospace;
+$font-family-base:       $font-family-sans-serif;
+$headings-font-family:   "Cormorant Garamond", Georgia, serif;
+$headings-font-weight:   600;
+
+// Square-ish corners — Veraxity's site uses a 0.125rem radius throughout.
+$border-radius:    0.125rem;
+$border-radius-sm: 0.125rem;
+$border-radius-lg: 0.125rem;
+
+$link-color:       $primary;
+$link-hover-color:  $secondary;

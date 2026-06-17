@@ -24,6 +24,10 @@ $CFG->admin     = 'admin';
 $CFG->directorypermissions   = 0777;
 $CFG->disableupdateautodeploy = true;
 
+// Mobile app
+$CFG->enablewebservices      = true;
+$CFG->enablemobilewebservice = true;
+
 // Tell Moodle it sits behind an SSL-terminating reverse proxy (Caddy).
 // Without this, Moodle sees HTTP internally and loops redirecting to HTTPS.
 if (str_starts_with($CFG->wwwroot, 'https://')) {

@@ -1,0 +1,478 @@
+// Veraxity brand — extra rules appended after the compiled Boost stylesheet.
+// Styles the front-page hero and course index rendered by
+// theme_veraxity\output\core\course_renderer.
+
+// Boost wraps every page's main content in a white "paper" box
+// (.main-inner { background-color: $white }) and prints a page-title header
+// above it. On the front page that fights with our own hero, so both get
+// neutralised here rather than in core.
+.pagelayout-frontpage {
+    #page-header {
+        display: none;
+    }
+}
+
+// Boost narrows "reading" pages (course view/edit, profile, the front page —
+// anything with add_body_class('limitedwidth'), or anything on the
+// 'standard' layout) to $course-content-maxwidth (830px), but leaves
+// "tabular" pages (Participants, Grades, Reports — pagelayout 'admin' /
+// 'report') full width. Moving between tabs in the same course then jumps
+// between two widths, which reads as broken rather than intentional — so
+// it's normalized to full width everywhere instead. Matches core's selector
+// (and so its specificity) so this wins on source order without !important.
+.pagelayout-standard,
+body.limitedwidth {
+    #page.drawers .main-inner,
+    .footer-popover {
+        max-width: none;
+    }
+}
+
+.header-maxwidth {
+    max-width: none;
+}
+
+// Boost's own rule is #page.drawers .main-inner (an ID selector), which
+// outranks a plain class selector — match its specificity via the same
+// ancestor chain instead of reaching for !important. These properties are
+// purely cosmetic (unlike the max-width above) so they stay scoped to the
+// custom front page rather than applying everywhere.
+body.pagelayout-frontpage #page.drawers .main-inner {
+    background-color: $body-bg;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin-top: 0;
+}
+
+// frontpage_part() always prints its own heading (e.g. "Available courses")
+// above whatever frontpage_available_courses() returns; our override already
+// supplies a branded heading, so drop the generic outer one to avoid showing
+// both stacked on top of each other.
+#frontpage-available-course-list > h2:first-child {
+    display: none;
+}
+
+// Give the top nav its own identity instead of blending into the body bg.
+// Core prints a literal `bg-body` utility class on this element, which sets
+// background-color !important — only !important can outrank that here.
+.navbar.fixed-top {
+    background-color: $body-color !important;
+    border-bottom: 1px solid $secondary;
+
+    .navbar-brand,
+    .nav-link {
+        color: $veraxity-card-bg;
+    }
+
+    .nav-link:hover,
+    .navbar-brand:hover {
+        color: $primary;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: $primary;
+    }
+}
+
+// Single orchestrated motion moment: the hero stages in on load, the cursor
+// blinks throughout. Nothing else on the page animates — one deliberate
+// gesture rather than scattered effects, and both respect reduced-motion.
+@keyframes veraxity-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes veraxity-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.veraxity-cursor {
+    display: inline-block;
+    width: .5em;
+    height: 1em;
+    margin-inline-start: .2em;
+    background-color: $primary;
+    vertical-align: text-bottom;
+    animation: veraxity-blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .veraxity-cursor {
+        animation: none;
+    }
+}
+
+// Full-bleed, full-viewport hero. Dark rather than the page's cream body —
+// a deliberate one-section contrast (blueprint grid + amber glow, evoking
+// drafting paper/schematics for a software architect's academy) rather than
+// an attempt to theme the whole site dark.
+.veraxity-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 6rem 1.5rem;
+    text-align: center;
+    overflow: hidden;
+    background-color: $body-color;
+    background-image:
+        radial-gradient(ellipse 60% 50% at 20% 15%, rgba($primary, .22), transparent),
+        radial-gradient(ellipse 55% 50% at 85% 85%, rgba($secondary, .18), transparent);
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba($veraxity-card-bg, .07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba($veraxity-card-bg, .07) 1px, transparent 1px);
+        background-size: 48px 48px;
+    }
+
+    &__inner {
+        position: relative;
+        z-index: 1;
+        max-width: 38rem;
+        width: 100%;
+    }
+
+    &__eyebrow,
+    &__title,
+    &__subtitle,
+    &__search,
+    &__divider,
+    &__cta {
+        animation: veraxity-fade-up .5s ease-out both;
+    }
+
+    &__eyebrow { animation-delay: 0s; }
+    &__title { animation-delay: .08s; }
+    &__subtitle { animation-delay: .16s; }
+    &__search { animation-delay: .24s; }
+    &__divider { animation-delay: .3s; }
+    &__cta { animation-delay: .36s; }
+
+    @media (prefers-reduced-motion: reduce) {
+        &__eyebrow, &__title, &__subtitle, &__search, &__divider, &__cta {
+            animation: none;
+        }
+    }
+
+    &__eyebrow {
+        font-family: $font-family-sans-serif;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: $primary;
+        margin-bottom: 0.75rem;
+    }
+
+    &__title {
+        font-family: $headings-font-family;
+        font-weight: $headings-font-weight;
+        font-size: clamp(2.5rem, calc(4vw + 1.5rem), 4.25rem);
+        line-height: 1.1;
+        color: $veraxity-card-bg;
+        margin-bottom: 1rem;
+    }
+
+    &__subtitle {
+        font-family: $font-family-sans-serif;
+        font-size: 1.1rem;
+        color: $veraxity-card-bg;
+        max-width: 42rem;
+        margin: 0 auto;
+        opacity: 0.8;
+    }
+
+    &__search {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        max-width: 30rem;
+        margin: 2.5rem auto 0;
+        padding-bottom: .6rem;
+        border-bottom: 1px solid rgba($veraxity-card-bg, .25);
+        transition: border-color .15s ease-in-out;
+
+        &:focus-within {
+            border-color: $primary;
+        }
+    }
+
+    &__search-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: none;
+        background: transparent;
+        padding: 0;
+        font-family: $font-family-sans-serif;
+        font-size: .95rem;
+        color: $veraxity-card-bg;
+
+        &::placeholder {
+            color: rgba($veraxity-card-bg, .45);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    &__search-submit {
+        flex: 0 0 auto;
+        border: none;
+        background: transparent;
+        color: $primary;
+        padding: 0;
+        line-height: 0;
+        transition: color .15s ease-in-out;
+
+        &:hover,
+        &:focus-visible {
+            color: $secondary;
+        }
+    }
+
+    &__divider {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        max-width: 22rem;
+        margin: 1.75rem auto 0;
+        font-family: $font-family-sans-serif;
+        font-size: .75rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: rgba($veraxity-card-bg, .45);
+
+        &::before,
+        &::after {
+            content: '';
+            flex: 1 1 auto;
+            height: 1px;
+            background-color: rgba($veraxity-card-bg, .18);
+        }
+    }
+
+    &__cta {
+        display: inline-block;
+        margin-top: 1.75rem;
+        padding: .65rem 1.75rem;
+        font-family: $font-family-sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: $body-color;
+        background-color: $primary;
+        border-radius: $border-radius;
+        text-decoration: none;
+        transition: background-color .15s ease-in-out;
+
+        &:hover {
+            background-color: $secondary;
+            color: $veraxity-card-bg;
+        }
+    }
+}
+
+// "Why Veraxity" — three value props between the hero and the course
+// listing, numbered like the terminal entries below (01/, 02/, 03/) so the
+// page reads as one consistent visual system rather than a generic
+// icon-card section bolted onto a terminal-themed page.
+.veraxity-values {
+    max-width: $veraxity-content-maxwidth;
+    margin: 3.5rem auto 0;
+    padding: 0 1.5rem;
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        border-top: 1px solid $border-color;
+        padding-top: 2rem;
+
+        @media (max-width: 48rem) {
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+        }
+    }
+
+    &__index {
+        display: block;
+        font-family: $font-family-sans-serif;
+        font-size: .85rem;
+        font-weight: 500;
+        color: $primary;
+        margin-bottom: .5rem;
+    }
+
+    &__title {
+        font-family: $headings-font-family;
+        font-weight: $headings-font-weight;
+        font-size: 1.15rem;
+        color: $body-color;
+        margin-bottom: .4rem;
+    }
+
+    &__body {
+        font-family: $font-family-sans-serif;
+        font-size: .85rem;
+        color: $body-color;
+        opacity: .7;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+}
+
+// The signature: the course catalogue as a terminal directory listing.
+// Veraxity is a software architect's academy — this is the artifact that
+// subject actually produces, not a generic card grid or stat-block.
+.veraxity-terminal {
+    max-width: $veraxity-content-maxwidth;
+    margin: 3rem auto 4rem;
+    padding: 0 1.5rem;
+
+    &__chrome {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        background-color: $body-color;
+        padding: .65rem 1rem;
+        border: 1px solid $body-color;
+    }
+
+    &__dot {
+        width: .55rem;
+        height: .55rem;
+        border-radius: 50%;
+        flex: 0 0 auto;
+
+        &--1 { background-color: $primary; }
+        &--2 { background-color: $secondary; }
+        &--3 { background-color: $veraxity-card-bg; }
+    }
+
+    &__title {
+        margin-inline-start: .75rem;
+        font-family: $font-family-sans-serif;
+        font-size: .8rem;
+        color: $veraxity-card-bg;
+        opacity: .8;
+    }
+
+    &__body {
+        background-color: $veraxity-card-bg;
+        border: 1px solid $border-color;
+        border-top: none;
+        padding: 1.5rem;
+    }
+
+    &__line {
+        font-family: $font-family-sans-serif;
+        font-size: .9rem;
+        color: $body-color;
+        margin-bottom: .5rem;
+    }
+
+    &__prompt {
+        color: $primary;
+        margin-inline-end: .5rem;
+    }
+
+    &__comment {
+        font-family: $font-family-sans-serif;
+        font-size: .8rem;
+        color: $body-color;
+        opacity: .55;
+        margin-bottom: 1.25rem;
+    }
+
+    &__entries {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__viewall {
+        color: $primary;
+        text-decoration: underline;
+        text-decoration-color: rgba($primary, .35);
+
+        &:hover {
+            color: $secondary;
+        }
+    }
+
+    &__entry {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        padding: .85rem .75rem;
+        margin: 0 -.75rem;
+        border-inline-start: 3px solid transparent;
+        text-decoration: none;
+        transition: border-inline-start-color .15s ease-in-out, background-color .15s ease-in-out;
+
+        &:hover,
+        &:focus-visible {
+            border-inline-start-color: $primary;
+            background-color: rgba(186, 117, 23, .08);
+
+            .veraxity-terminal__entry-title {
+                color: $primary;
+            }
+
+            .veraxity-terminal__entry-path {
+                color: $secondary;
+            }
+        }
+
+        // Below ~36rem, a wrapped multi-line title leaves the folio number
+        // floating beside only its first line, looking orphaned rather than
+        // attached to the entry. Stacking it above the title instead reads
+        // as a tag/label, which holds up regardless of how many lines wrap.
+        @media (max-width: 36rem) {
+            flex-direction: column;
+            align-items: stretch;
+            gap: .35rem;
+        }
+
+        &-path {
+            flex: 0 0 auto;
+            font-family: $font-family-sans-serif;
+            font-size: .85rem;
+            font-weight: 500;
+            color: $primary;
+            min-width: 2.5rem;
+            transition: color .15s ease-in-out;
+        }
+
+        &-body {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        &-title {
+            font-family: $headings-font-family;
+            font-weight: $headings-font-weight;
+            font-size: 1.2rem;
+            color: $body-color;
+            transition: color .15s ease-in-out;
+        }
+
+        &-summary {
+            font-family: $font-family-sans-serif;
+            font-size: .82rem;
+            color: $body-color;
+            opacity: .65;
+            line-height: 1.5;
+        }
+    }
+}
