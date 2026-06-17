@@ -1080,6 +1080,46 @@ body.path-enrol {
 
             a { color: $secondary; }
         }
+
+        // Custom course fields (Site admin > Courses > Custom fields) —
+        // duration/format/language/objectives render here automatically;
+        // only fields with an actual value on this course show at all.
+        .customfields-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid $border-color;
+
+            .customfield_objectives { flex-basis: 100%; }
+
+            .customfieldname {
+                display: block;
+                font-family: $lp-font-mono;
+                font-size: 10px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: $secondary;
+                margin-bottom: 3px;
+            }
+
+            .customfieldseparator { display: none; }
+
+            .customfieldvalue {
+                font-family: $lp-font-sans;
+                font-size: 13.5px;
+                color: $body-color;
+            }
+
+            .customfield_objectives .customfieldvalue {
+                display: block;
+                font-weight: 400;
+                color: $veraxity-charcoal-light;
+                line-height: 1.65;
+                white-space: pre-line;
+            }
+        }
     }
 
     .enrol-instance .card {
@@ -1116,6 +1156,11 @@ html[dir="rtl"] body.path-enrol {
     .coursebox {
         .info .coursename a { font-family: $lp-font-serif-rtl; font-weight: 700; }
         .summary, .teachers { font-family: $lp-font-sans-rtl; }
+
+        .customfields-container {
+            .customfieldname { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
+            .customfieldvalue { font-family: $lp-font-sans-rtl; }
+        }
     }
 
     .enrol-instance .card .card-header { font-family: $lp-font-serif-rtl; font-weight: 700; }
