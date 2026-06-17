@@ -104,6 +104,25 @@ body.pagelayout-admin {
             display: none !important;
         }
     }
+
+    // admin/search.php's tabbed overview (core/settings_link_page.mustache)
+    // groups a category's own heading with its children's list in one
+    // ".row" — hiding only the children above (now-empty .ai/.mobileapp
+    // categories) leaves that row's heading behind with a blank list next
+    // to it. Hide the whole row when *its own* heading is one of the
+    // categories being removed, not just its children.
+    .row:has(> .col-sm-3 > h4 > a[href*="category.php?category=ai"]),
+    .row:has(> .col-sm-3 > h4 > a[href*="category.php?category=mobileapp"]) {
+        display: none !important;
+    }
+
+    // Same categories, but in the nav-tabs strip at the top of that page
+    // (rendered only when there are enough top-level categories with
+    // children to need tabs, rather than the inline row above).
+    li.nav-item:has(> a[href="#linkai"]),
+    li.nav-item:has(> a[href="#linkmobileapp"]) {
+        display: none !important;
+    }
 }
 
 // mform's "required field" marker (a small icon next to the label, plus a
