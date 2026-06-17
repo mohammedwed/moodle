@@ -172,14 +172,43 @@ class course_renderer extends \core_course_renderer {
             $summary = get_string('programsnosummary', 'theme_veraxity');
         }
 
+        $imageurl = $this->veraxity_course_image_url($course);
+        $visual = $imageurl !== null
+            ? '<div class="veraxity-lp-program__image"><img src="' . $imageurl . '" alt=""></div>'
+            : '<div class="veraxity-lp-program__icon">' . $icon . '</div>';
+
         return '
-            <div class="veraxity-lp-program veraxity-lp-fade-up">
-                <div class="veraxity-lp-program__icon">' . $icon . '</div>
+            <div class="veraxity-lp-program veraxity-lp-fade-up">' .
+                $visual . '
                 <h3 class="veraxity-lp-program__title">' . $name . '</h3>
                 <p class="veraxity-lp-program__desc">' . $summary . '</p>
                 <a href="' . $url . '" class="veraxity-lp-program__link">' .
                     get_string('programlink', 'theme_veraxity') . $arrow . '</a>
             </div>';
+    }
+
+    /**
+     * URL of the course's "Course summary files" image (Course Settings >
+     * Course image), the same field that already powers the catalog cards
+     * and the enrolment overview page — no plugin needed, just reused here.
+     * Returns null when the course has no image, so callers fall back to
+     * the generic icon.
+     */
+    protected function veraxity_course_image_url(\core_course_list_element $course): ?string {
+        global $CFG;
+
+        foreach ($course->get_course_overviewfiles() as $file) {
+            if ($file->is_valid_image()) {
+                return \moodle_url::make_file_url(
+                    "$CFG->wwwroot/pluginfile.php",
+                    '/' . $file->get_contextid() . '/' . $file->get_component() . '/' .
+                        $file->get_filearea() . $file->get_filepath() . $file->get_filename(),
+                    false
+                )->out();
+            }
+        }
+
+        return null;
     }
 
     protected function veraxity_quote(): string {
