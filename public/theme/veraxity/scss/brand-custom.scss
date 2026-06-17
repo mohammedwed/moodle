@@ -1317,5 +1317,9 @@ html[dir="rtl"] {
 .veraxity-visitor-main {
     max-width: 75rem;
     margin: 0 auto;
-    padding: 3rem 1.5rem 4rem;
+    padding: 4.5rem 1.5rem 4rem;
+}
+
+@media (max-width: 47.5rem) {
+    .veraxity-visitor-main { padding: 2.5rem 1.25rem 3rem; }
 }
