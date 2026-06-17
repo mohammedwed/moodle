@@ -1288,25 +1288,36 @@ html[dir="rtl"] {
     .cov-objectives-box, .cov-structure-box { font-family: $lp-font-sans-rtl; }
 }
 
-// Adapts to the embed's own rendered width, not the viewport — same look
-// whether full-width or sitting in a narrower column of a host template.
-@container (max-width: 640px) {
-    .cov-row { grid-template-columns: 1fr; }
+// Viewport-based rather than the mockup's own @container queries: this
+// page is always full-width, never embedded in a narrower host column, so
+// there's no real "embeddable component" case to support here — and
+// Moodle's RTL stylesheet pass (lib/classes/rtlcss.php, on top of
+// core_minify) badly mangles multiple @container blocks in the same sheet
+// (verified against the compiled all-rtl stylesheet: one block's selector
+// was stripped entirely, leaving a bare declaration, and the other rule's
+// condition vanished, leaving it unconditional). @media doesn't hit this —
+// it's used throughout Moodle core's own RTL output already. Selectors
+// still carry an ancestor prefix (".cov-embed .cov-row" not bare
+// ".cov-row") because byte-identical selector text elsewhere in the sheet
+// has its own, separate drop/merge bug in the same RTL pass — see the
+// navbar background-color rule above for the first instance of that one.
+@media (max-width: 40rem) {
+    .cov-embed .cov-row { grid-template-columns: 1fr; }
 }
 
-@container (max-width: 380px) {
-    .cov-title { font-size: 21px; }
-    .cov-structure-desc { display: none; }
+@media (max-width: 23.75rem) {
+    .cov-info .cov-title { font-size: 21px; }
+    .cov-structure .cov-structure-desc { display: none; }
 }
 
 @media (max-width: 47.5rem) {
-    .cov-info,
-    .cov-objectives-box,
-    .cov-structure-box {
+    .cov-card .cov-info,
+    .cov-side .cov-objectives-box,
+    .cov-side .cov-structure-box {
         padding: 1.25rem;
     }
 
-    .cov-cta { padding: 0.875rem 1.25rem 1.25rem; }
+    .cov-card .cov-cta { padding: 0.875rem 1.25rem 1.25rem; }
 }
 
 // ── Visitor course-details page (theme/veraxity/coursedetails.php) ────────
@@ -1321,5 +1332,7 @@ html[dir="rtl"] {
 }
 
 @media (max-width: 47.5rem) {
-    .veraxity-visitor-main { padding: 2.5rem 1.25rem 3rem; }
+    // See the "RTL stylesheet drops byte-identical selectors" note above —
+    // same reason this is scoped through the page wrapper instead of bare.
+    .veraxity-lp-page-wrapper .veraxity-visitor-main { padding: 2.5rem 1.25rem 3rem; }
 }
