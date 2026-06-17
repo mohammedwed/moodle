@@ -40,7 +40,7 @@ html body.pagelayout-login #page .login-layout-left::after {
 // background-color !important — only !important can outrank that here.
 // Applies site-wide (course pages, dashboard, etc.) — the front page uses its
 // own nav entirely (see .veraxity-lp-nav below) and never renders this one.
-.navbar.fixed-top {
+html .navbar.fixed-top {
     background-color: $body-color !important;
     border-bottom: 1px solid $secondary;
 
@@ -59,19 +59,39 @@ html body.pagelayout-login #page .login-layout-left::after {
     }
 }
 
-// ── Landing page (academy-portal-concept mockup) ────────────────────────────
-// Everything below is scoped to elements built by course_renderer::frontpage()
-// and theme/veraxity/layout/frontpage.php, all under the veraxity-lp- prefix
-// so it can't leak onto any other page. Bilingual: English pairs a serif
-// (headings) with Inter (body) and DM Mono (small uppercase chrome labels);
-// Arabic swaps in Amiri (headings) and Cairo (body/labels) since uppercase
-// letter-spaced mono treatment doesn't have an Arabic equivalent. Numerals
-// (step counters) stay DM Mono + forced LTR in both directions.
+// Bilingual font stack shared by the landing page and the branded navbar
+// wordmark below: English pairs a serif (headings) with Inter (body) and
+// DM Mono (small uppercase chrome labels); Arabic swaps in Amiri (headings)
+// and Cairo (body/labels) since uppercase letter-spaced mono treatment
+// doesn't have an Arabic equivalent. Declared before first use since SCSS
+// variables aren't hoisted.
 $lp-font-sans:      'Inter', sans-serif;
 $lp-font-sans-rtl:  'Cairo', sans-serif;
 $lp-font-serif:     'Cormorant Garamond', Georgia, serif;
 $lp-font-serif-rtl: 'Amiri', Georgia, serif;
 $lp-font-mono:      'DM Mono', monospace;
+
+// Branded wordmark (theme/veraxity/templates/theme_boost/navbar.mustache)
+// replacing the plain site-name text — same "Veraxity Academy" treatment
+// as the landing page nav, everywhere else in the site.
+.veraxity-navbar-brand {
+    font-family: $lp-font-serif;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+
+    span { color: $primary; font-style: italic; }
+}
+
+html[dir="rtl"] .veraxity-navbar-brand {
+    font-family: $lp-font-serif-rtl;
+    font-weight: 700;
+}
+
+// ── Landing page (academy-portal-concept mockup) ────────────────────────────
+// Everything below is scoped to elements built by course_renderer::frontpage()
+// and theme/veraxity/layout/frontpage.php, all under the veraxity-lp- prefix
+// so it can't leak onto any other page.
 
 .veraxity-lp-en {
     font-family: $lp-font-mono;
@@ -1008,11 +1028,10 @@ html[dir="rtl"] .veraxity-lp-footer-extra {
 }
 
 // ── Course enrolment overview page (enrol/index.php) ───────────────────────
-// Restyles core's existing course_info_box()/coursebox + enrol-widget card
-// markup in place — no template overrides, so this keeps working across
-// core upgrades. Scoped to body.path-enrol (set by Moodle for this script)
-// since .coursebox/.card are reused by the catalog and dashboard, which
-// must stay untouched.
+// The "Enrolment options" eyebrow heading and the self-enrol/guest-access
+// widget card are core markup, restyled in place. The course_info_box()
+// itself is fully replaced by theme_veraxity's own course_renderer (the
+// .cov-* "embeddable component" design below), not just restyled.
 body.path-enrol {
     #region-main [role="main"] > h2:first-of-type {
         font-family: $lp-font-mono;
@@ -1021,105 +1040,6 @@ body.path-enrol {
         text-transform: uppercase;
         color: $secondary;
         margin-bottom: 1rem;
-    }
-
-    .coursebox {
-        max-width: 44rem;
-        margin: 0 auto 1.5rem;
-        background: $white;
-        border: 1px solid $border-color;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 16px 36px rgba($body-color, .06);
-
-        .info {
-            padding: 1.75rem 1.75rem 0;
-
-            .coursename a {
-                font-family: $lp-font-serif;
-                font-size: 26px;
-                font-weight: 600;
-                color: $body-color;
-                text-decoration: none;
-            }
-        }
-
-        .content {
-            padding: 0 1.75rem 1.75rem;
-
-            // Core's d-flex puts the course image beside the text; stacking
-            // it instead turns the existing image into a real banner.
-            .d-flex { flex-direction: column; }
-        }
-
-        .courseimage {
-            margin: 0 -1.75rem 1.5rem;
-
-            img {
-                width: 100%;
-                max-height: 20rem;
-                object-fit: cover;
-                display: block;
-            }
-        }
-
-        .summary {
-            font-family: $lp-font-sans;
-            font-size: 15px;
-            color: $veraxity-charcoal-light;
-            line-height: 1.7;
-        }
-
-        .teachers {
-            list-style: none;
-            padding: 0;
-            margin: 1rem 0 0;
-            font-family: $lp-font-sans;
-            font-size: 13px;
-            color: $veraxity-charcoal-light;
-
-            a { color: $secondary; }
-        }
-
-        // Custom course fields (Site admin > Courses > Custom fields) —
-        // duration/format/language/objectives render here automatically;
-        // only fields with an actual value on this course show at all.
-        .customfields-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-top: 1.25rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid $border-color;
-
-            .customfield_objectives { flex-basis: 100%; }
-
-            .customfieldname {
-                display: block;
-                font-family: $lp-font-mono;
-                font-size: 10px;
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-                color: $secondary;
-                margin-bottom: 3px;
-            }
-
-            .customfieldseparator { display: none; }
-
-            .customfieldvalue {
-                font-family: $lp-font-sans;
-                font-size: 13.5px;
-                color: $body-color;
-            }
-
-            .customfield_objectives .customfieldvalue {
-                display: block;
-                font-weight: 400;
-                color: $veraxity-charcoal-light;
-                line-height: 1.65;
-                white-space: pre-line;
-            }
-        }
     }
 
     .enrol-instance .card {
@@ -1153,110 +1073,236 @@ html[dir="rtl"] body.path-enrol {
         text-transform: none;
     }
 
-    .coursebox {
-        .info .coursename a { font-family: $lp-font-serif-rtl; font-weight: 700; }
-        .summary, .teachers { font-family: $lp-font-sans-rtl; }
-
-        .customfields-container {
-            .customfieldname { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
-            .customfieldvalue { font-family: $lp-font-sans-rtl; }
-        }
-    }
-
     .enrol-instance .card .card-header { font-family: $lp-font-serif-rtl; font-weight: 700; }
 }
 
-@media (max-width: 47.5rem) {
-    body.path-enrol .coursebox {
-        .info { padding: 1.25rem 1.25rem 0; }
-        .content { padding: 0 1.25rem 1.25rem; }
-        .courseimage { margin: 0 -1.25rem 1.25rem; img { max-height: 12rem; } }
-    }
-}
-
-// ── Course structure card ───────────────────────────────────────────────
-// Appended by theme_veraxity\output\core\course_renderer::course_info_box()
-// after the existing info card on enrol/index.php and course/info.php —
-// not scoped to body.path-enrol since it should render on both.
-.veraxity-structure {
-    max-width: 44rem;
+// ── Course overview card ────────────────────────────────────────────────
+// Built by theme_veraxity\output\core\course_renderer::course_info_box(),
+// matching the course-overview-component mockup. Not scoped to
+// body.path-enrol since it also renders on course/info.php.
+.cov-card {
+    container-type: inline-size;
+    max-width: 65rem; // 1040px — mockup's 880px widened ~2 grid columns, still well short of full bleed.
     margin: 0 auto 1.5rem;
     background: $white;
     border: 1px solid $border-color;
-    border-radius: 12px;
-    padding: 1.75rem;
+    border-radius: 16px;
+    overflow: hidden;
     box-shadow: 0 16px 36px rgba($body-color, .06);
+    font-family: $lp-font-sans;
+    color: $body-color;
+}
 
-    &__heading {
-        font-family: $lp-font-mono;
-        font-size: 11px;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: $secondary;
-        margin-bottom: 1.25rem;
-    }
+// Puts the objectives/structure boxes beside the card instead of below it.
+// Only rendered when there's at least one box to show — otherwise the lone
+// .cov-card above centers itself via its own max-width/margin.
+.cov-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 75rem;
+    margin: 0 auto 1.5rem;
 
-    &__list {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    &__item {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid $border-color;
-
-        &:last-child { padding-bottom: 0; border-bottom: none; }
-    }
-
-    &__num {
-        flex: 0 0 auto;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: $body-color;
-        color: $primary;
-        font-family: $lp-font-mono;
-        font-size: 11px;
-        direction: ltr;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    &__name {
-        font-family: $lp-font-serif;
-        font-size: 16px;
-        font-weight: 600;
-        color: $body-color;
-        margin-bottom: 4px;
-    }
-
-    &__desc {
-        font-family: $lp-font-sans;
-        font-size: 13px;
-        color: $veraxity-charcoal-light;
-        line-height: 1.6;
-    }
-
-    &__more {
-        font-family: $lp-font-sans;
-        font-size: 12px;
-        color: $veraxity-charcoal-light;
-        margin-top: 1rem;
-        text-align: center;
+    .cov-card {
+        max-width: none;
+        margin: 0;
+        flex: 1 1 42rem;
+        min-width: 0;
     }
 }
 
-html[dir="rtl"] .veraxity-structure {
-    &__heading { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
-    &__name { font-family: $lp-font-serif-rtl; font-weight: 700; }
-    &__desc, &__more { font-family: $lp-font-sans-rtl; }
+.cov-aside {
+    display: flex;
+    gap: 1.25rem;
+    flex: 1 1 30rem;
+    min-width: 0;
+}
+
+.cov-aside-box {
+    container-type: inline-size;
+    flex: 1 1 50%;
+    min-width: 0;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 16px 36px rgba($body-color, .06);
+    font-family: $lp-font-sans;
+    color: $body-color;
+}
+
+.cov-media {
+    position: relative;
+    background: $body-color;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+
+    img { width: 100%; height: 100%; object-fit: cover; display: block; }
+}
+
+.cov-info { padding: 1.5rem 1.75rem; }
+
+.cov-title {
+    font-family: $lp-font-serif;
+    font-weight: 600;
+    font-size: 27px;
+    line-height: 1.15;
+    color: $body-color;
+    margin-bottom: 8px;
+}
+
+.cov-subtitle {
+    font-size: 13px;
+    color: $veraxity-charcoal-light;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.cov-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 1.75rem;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid $border-color;
+}
+
+.cov-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    // A minimum but no grow: items stay compact and sit together at the
+    // row's start instead of stretching apart across a full-width card.
+    flex: 0 1 9rem;
+}
+
+.cov-meta-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $secondary;
+
+    svg { width: 15px; height: 15px; }
+}
+
+.cov-meta-label {
+    font-family: $lp-font-mono;
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $veraxity-charcoal-light;
+}
+
+.cov-meta-value { font-size: 12px; font-weight: 600; color: $body-color; line-height: 1.3; }
+
+.cov-section-label {
+    font-family: $lp-font-mono;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $secondary;
+    margin-bottom: 10px;
+}
+
+.cov-objectives {
+    font-size: 13.5px;
+    color: $veraxity-charcoal-light;
+    line-height: 1.75;
+}
+
+.cov-structure { padding: 18px 0 4px; list-style: none; }
+
+.cov-structure-item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 9px 0;
+}
+
+.cov-structure-num {
+    font-family: $lp-font-mono;
+    font-size: 10.5px;
+    color: $secondary;
+    flex-shrink: 0;
+    width: 18px;
+    direction: ltr;
+}
+
+.cov-structure-title { font-size: 13px; font-weight: 600; color: $body-color; }
+.cov-structure-desc { font-size: 12px; color: $veraxity-charcoal-light; }
+
+.cov-structure-more {
+    font-size: 12px;
+    color: $veraxity-charcoal-light;
+    padding: 8px 0 16px;
+    border-top: 1px dashed $border-color;
+    margin-top: 4px;
+}
+
+.cov-footer {
+    background: $veraxity-card-bg;
+    border-top: 1px solid $border-color;
+    padding: 16px 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.cov-btn {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 9px 18px;
+    border-radius: 9999px;
+    white-space: nowrap;
+}
+
+.cov-btn-gold { color: $body-color; background: $primary; border: 1px solid transparent; }
+
+html[dir="rtl"] {
+    .cov-card { font-family: $lp-font-sans-rtl; }
+    .cov-title { font-family: $lp-font-serif-rtl; font-weight: 700; line-height: 1.3; }
+    .cov-subtitle { font-family: $lp-font-sans-rtl; }
+    .cov-meta-label { font-family: $lp-font-sans-rtl; font-weight: 600; letter-spacing: 0.02em; text-transform: none; }
+    .cov-meta-value { font-family: $lp-font-sans-rtl; }
+    .cov-section-label { font-family: $lp-font-sans-rtl; font-weight: 700; letter-spacing: 0.02em; text-transform: none; }
+    .cov-objectives { font-family: $lp-font-sans-rtl; }
+    .cov-structure-title, .cov-structure-desc, .cov-structure-more { font-family: $lp-font-sans-rtl; }
+    .cov-aside-box { font-family: $lp-font-sans-rtl; }
+}
+
+// Adapts to the card's own (or aside box's own) rendered width, not the
+// viewport — same look whether full-width or embedded in a narrow column.
+@container (max-width: 380px) {
+    .cov-title { font-size: 22px; }
+    .cov-structure-desc { display: none; }
+}
+
+// Card and aside no longer fit comfortably side by side — stack the aside
+// below the card instead.
+@media (max-width: 64rem) {
+    .cov-layout {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cov-aside {
+        flex-basis: auto;
+    }
 }
 
 @media (max-width: 47.5rem) {
-    .veraxity-structure { padding: 1.25rem; }
+    .cov-info { padding: 1.25rem; }
+    .cov-aside-box { padding: 1.25rem; }
+    .cov-footer { padding: 14px 1.25rem; }
+
+    // Two narrow side-by-side boxes get cramped on phones — stack them too.
+    .cov-aside {
+        flex-direction: column;
+    }
 }

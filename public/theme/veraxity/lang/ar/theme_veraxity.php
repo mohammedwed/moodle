@@ -114,5 +114,10 @@ $string['footercopyright'] = '© {$a} أكاديمية فيراكستي';
 $string['scrolltotop'] = 'العودة إلى الأعلى';
 
 // Course structure card (enrol/index.php, course/info.php).
+$string['metainstructor'] = 'المدرّب';
+$string['metaduration'] = 'المدة';
+$string['metaformat'] = 'الصيغة';
+$string['metalanguage'] = 'اللغة';
+$string['covobjectiveslabel'] = 'أهداف التعلّم';
 $string['coursestructure'] = 'هيكل المقرر';
 $string['coursestructuremore'] = '+ {$a} أخرى';

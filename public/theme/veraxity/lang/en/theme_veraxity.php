@@ -114,6 +114,11 @@ $string['footercopyright'] = '© {$a} Veraxity Academy';
 
 $string['scrolltotop'] = 'Scroll to top';
 
-// Course structure card (enrol/index.php, course/info.php).
+// Course overview card (enrol/index.php, course/info.php).
+$string['metainstructor'] = 'Instructor';
+$string['metaduration'] = 'Duration';
+$string['metaformat'] = 'Format';
+$string['metalanguage'] = 'Language';
+$string['covobjectiveslabel'] = 'Learning Objectives';
 $string['coursestructure'] = 'Course Structure';
 $string['coursestructuremore'] = '+ {$a} more';
